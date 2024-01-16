@@ -35,12 +35,20 @@
 #define PROS_USE_LITERALS
 
 #include "api.h"
+#include "library/api.hpp"
+using namespace lib;
+using namespace lib::control;
+using namespace lib::math;
+using namespace lib::utility;
+using namespace lib::input;
 
 /**
  * You should add more #includes here
  */
 //#include "okapi/api.hpp"
 //#include "pros/api_legacy.h"
+#include "headers/globals.hpp"
+#include "headers/systems.hpp"
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do
@@ -78,4 +86,4 @@ void opcontrol(void);
 //#include <iostream>
 #endif
 
-#endif  // _PROS_MAIN_H_
+#endif // _PROS_MAIN_H_
