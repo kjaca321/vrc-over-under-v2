@@ -5,7 +5,7 @@ Driver robot(std::vector<int>{12, 13, 14}, std::vector<int>{-17, -18, -19},
 
 DigitalSystem front_wings('D');
 
-DigitalSystem hang1('E'), hang2('F');
+DigitalSystem hang1('C'), hang2('F');
 
 DigitalSystem left_wing('G'), right_wing('H');
 

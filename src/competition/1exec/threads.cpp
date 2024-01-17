@@ -38,6 +38,7 @@ void run_input() {
     intake_rev_req = Digital::pressing(Button::L2);
     front_wings_req = Digital::pressing(Button::R1);
     wings_req = Digital::pressing(Button::R2);
+    hang_req = Button::b_pressed;
     pros::Task::delay_until(&nw, 5);
   }
 }

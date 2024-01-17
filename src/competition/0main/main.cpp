@@ -3,7 +3,7 @@
 void initialize() {
   robot.setup();
   master.rumble("-");
-  robot.set_controller_tuning("arcade", 0.9, "exponential", 0.015, 10, 0.95);
+  robot.set_controller_tuning("arcade", 1, "exponential", 0.02, 10, 0.95);
 }
 
 void disabled() {}
