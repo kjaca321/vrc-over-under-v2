@@ -34,10 +34,10 @@ void run_input() {
   while (1) {
     std::uint32_t nw = pros::millis();
     cata_req = Button::a_pressed;
-    intake_req = Digital::pressing(Button::L1);
-    intake_rev_req = Digital::pressing(Button::L2);
-    front_wings_req = Digital::pressing(Button::R1);
-    wings_req = Digital::pressing(Button::R2);
+    intake_req = Digital::pressing(Button::R1);
+    intake_rev_req = Digital::pressing(Button::L1);
+    front_wings_req = Digital::pressing(Button::R2);
+    wings_req = Digital::pressing(Button::L2);
     hang_req = Button::b_pressed;
     pros::Task::delay_until(&nw, 5);
   }
