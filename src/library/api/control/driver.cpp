@@ -53,51 +53,72 @@ void Driver::turn_pt(math::Angle desired_heading) {
 }
 
 void Driver::control() {
+  float v_out, w_out, dt = 0.01;
+  float accel = 100, vt = 0, vt_prev = 0;
+  float accelw = 150, wt = 0, wt_prev = 0;
   while (1) {
     std::uint32_t nw = pros::millis();
-
     left_y_error = input::Analog::get_left_y() - left_y_output;
-    left_x_error = input::Analog::get_left_x() - left_x_output;
-    right_y_error = input::Analog::get_right_y() - right_y_output;
     right_x_error = input::Analog::get_right_x() - right_x_output;
 
-    left_y_output += accel_time * left_y_error;
-    left_x_output += accel_time * left_x_error;
-    right_y_output += accel_time * right_y_error;
-    right_x_output += accel_time * right_x_error;
+    float ve = left_y_error;
+    vt += accel * dt;
+    vt = math::Math::sgn(vt) * fmin(fabs(vt), 127);
+    float dv = vt - vt_prev;
+    v_out += dv;
+    ve -= dv;
+    vt_prev = vt;
 
-    if (control_type == "arcade") {
-      left_velocity = left_y_output + turn_sens * right_x_output;
-      right_velocity = left_y_output - turn_sens * right_x_output;
-    } else {
-      left_velocity = left_y_output;
-      right_velocity = right_y_output;
-    }
+    float we = right_x_error;
+    wt += accelw * dt;
+    wt = math::Math::sgn(wt) * fmin(fabs(wt), 127);
+    float dw = wt - wt_prev;
+    w_out += dw;
+    we -= dw;
+    wt_prev = wt;
 
-    if (map_type == "logistic") {
-      left_final_velocity = logistic_map(left_velocity);
-      right_final_velocity = logistic_map(right_velocity);
-    } else {
-      left_final_velocity = map(left_velocity);
-      right_final_velocity = map(right_velocity);
-    }
+    move_left(v_out + w_out);
+    move_right(v_out - w_out);
 
-    if (std::abs(left_final_velocity) > driver_max_velocity)
-      left_final_velocity =
-          math::Math::sgn(left_final_velocity) * driver_max_velocity;
-    if (std::abs(right_final_velocity) > driver_max_velocity)
-      right_final_velocity =
-          math::Math::sgn(right_final_velocity) * driver_max_velocity;
+    pros::delay(1000 * dt);
 
-    if (std::abs(left_final_velocity) < brake_thresh)
-      left_final_velocity = 0;
-    if (std::abs(right_final_velocity) < brake_thresh)
-      right_final_velocity = 0;
+    // left_y_output += accel_time * left_y_error;
+    // left_x_output += accel_time * left_x_error;
+    // right_y_output += accel_time * right_y_error;
+    // right_x_output += accel_time * right_x_error;
 
-    move_left(left_final_velocity);
-    move_right(right_final_velocity);
+    // if (control_type == "arcade") {
+    //   left_velocity = left_y_output + turn_sens * right_x_output;
+    //   right_velocity = left_y_output - turn_sens * right_x_output;
+    // } else {
+    //   left_velocity = left_y_output;
+    //   right_velocity = right_y_output;
+    // }
 
-    pros::Task::delay_until(&nw, 5);
+    // if (map_type == "logistic") {
+    //   left_final_velocity = logistic_map(left_velocity);
+    //   right_final_velocity = logistic_map(right_velocity);
+    // } else {
+    //   left_final_velocity = map(left_velocity);
+    //   right_final_velocity = map(right_velocity);
+    // }
+
+    // if (std::abs(left_final_velocity) > driver_max_velocity)
+    //   left_final_velocity =
+    //       math::Math::sgn(left_final_velocity) * driver_max_velocity;
+    // if (std::abs(right_final_velocity) > driver_max_velocity)
+    //   right_final_velocity =
+    //       math::Math::sgn(right_final_velocity) * driver_max_velocity;
+
+    // if (std::abs(left_final_velocity) < brake_thresh)
+    //   left_final_velocity = 0;
+    // if (std::abs(right_final_velocity) < brake_thresh)
+    //   right_final_velocity = 0;
+
+    // move_left(left_final_velocity);
+    // move_right(right_final_velocity);
+
+    pros::Task::delay_until(&nw, 1000 * dt);
   }
 }
 
