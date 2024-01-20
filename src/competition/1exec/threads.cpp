@@ -26,6 +26,10 @@ void run_systems() {
     left_wing.set(left_wing_req || wings_req);
     right_wing.set(right_wing_req || wings_req);
 
+    if (Digital::pressing(Button::X)) 
+      robot.set_accel_time(1);
+    else robot.set_accel_time(0.02);
+
     pros::Task::delay_until(&nw, 5);
   }
 }
