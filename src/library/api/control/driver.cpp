@@ -80,7 +80,7 @@ void Driver::control() {
     move_left(v_out + w_out);
     move_right(v_out - w_out);
 
-    pros::delay(1000 * dt);
+    // pros::delay(1000 * dt);
 
     // left_y_output += accel_time * left_y_error;
     // left_x_output += accel_time * left_x_error;
