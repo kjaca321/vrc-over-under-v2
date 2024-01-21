@@ -8,7 +8,7 @@ void run_systems() {
 
     cata.set_brake_mode(BrakeType::HOLD);
     if (cata_req)
-      cata.move(127);
+      cata.move(-127);
     else
       cata.brake();
 
@@ -25,10 +25,6 @@ void run_systems() {
     hang2.set(hang_req);
     left_wing.set(left_wing_req || wings_req);
     right_wing.set(right_wing_req || wings_req);
-
-    if (Digital::pressing(Button::X)) 
-      robot.set_accel_time(1);
-    else robot.set_accel_time(0.02);
 
     pros::Task::delay_until(&nw, 5);
   }

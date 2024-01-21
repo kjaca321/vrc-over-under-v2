@@ -9,6 +9,8 @@
 #pragma once
 #include "../../util.hpp"
 #include "../input/analog.hpp"
+#include "../input/button.hpp"
+#include "../input/digital.hpp"
 #include "../math/angle.hpp"
 #include "../math/math.hpp"
 #include "../math/vector.hpp"
@@ -33,9 +35,10 @@ public:
    * @param wheel : diameter of drive wheels
    * @param speed : speed of chassis in RPM
    * @param imu1 : imu sensor port
+   * @param trackw : robot track width
    */
   Driver(std::vector<int> left_ports, std::vector<int> right_ports, float wheel,
-         float speed, int imu1);
+         float speed, int imu1, float trackw);
 
   void follow_prim(Trajectory2D trajectory);
   void follow_feed(Trajectory2D trajectory);
@@ -100,6 +103,7 @@ private:
   std::string map_type;
   float accel_time;
   float brake_thresh;
+  float trackwidth;
   float turn_sens;
   float left_y_error;
   float left_y_output;

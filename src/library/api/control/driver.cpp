@@ -11,10 +11,10 @@
 namespace lib::control {
 
 Driver::Driver(std::vector<int> left_ports, std::vector<int> right_ports,
-               float wheel, float speed, int imu1)
+               float wheel, float speed, int imu1, float trackw)
     : PositionTracker(left_ports, right_ports, wheel, speed, imu1),
       control_type("arcade"), curve(1), map_type("logistic"), accel_time(0.01),
-      brake_thresh(0), turn_sens(1), left_y_error(0), left_y_output(0),
+      brake_thresh(0), trackwidth(trackw), turn_sens(1), left_y_error(0), left_y_output(0),
       left_x_error(0), left_x_output(0), right_y_error(0), right_y_output(0),
       right_x_error(0), right_x_output(0), left_velocity(0), right_velocity(0),
       left_final_velocity(0), right_final_velocity(0),
@@ -45,41 +45,51 @@ void Driver::turn_pt(math::Angle desired_heading) {
     float des_dist = pose.pos;
     float omega = pose.vel;
     float alpha = pose.acc;
-    float out = kv * omega + ka * alpha + kp * (omega - get_angular_vel());
-    move_left(out);
-    move_right(-out);
+    float left = omega * trackwidth / 2;
+    float right = -omega * trackwidth / 2;
+    float left_out = kv * left + kp * (left - get_left_vel());
+    float right_out = kv * right + kp * (right - get_right_vel());
+    move_left(left_out);
+    move_right(right_out);
     pros::delay(10);
   }
 }
 
 void Driver::control() {
-  float v_out, w_out, dt = 0.01;
-  float accel = 100, vt = 0, vt_prev = 0;
-  float accelw = 150, wt = 0, wt_prev = 0;
+  float v_out = 0, w_out = 0, dt = 0.01, tolerance = 0.8;
+  float accel = 370, vt = 0, vt_prev = 0;
+  float accelw = 420, wt = 0, wt_prev = 0;
   while (1) {
     std::uint32_t nw = pros::millis();
-    left_y_error = input::Analog::get_left_y() - left_y_output;
-    right_x_error = input::Analog::get_right_x() - right_x_output;
+    float ve = input::Analog::get_left_y() - v_out;
+    float we = input::Analog::get_right_x() - w_out;
 
-    float ve = left_y_error;
-    vt += accel * dt;
-    vt = math::Math::sgn(vt) * fmin(fabs(vt), 127);
-    float dv = vt - vt_prev;
-    v_out += dv;
-    ve -= dv;
-    vt_prev = vt;
+    if (fabs(ve) > tolerance) {
+      vt += math::Math::sgn(ve) * accel * dt;
+      vt = math::Math::sgn(vt) * fmin(fabs(vt), 127);
+      float dv = vt - vt_prev;
+      v_out += dv;
+      ve -= dv;
+      vt_prev = vt;
+    }
 
-    float we = right_x_error;
-    wt += accelw * dt;
-    wt = math::Math::sgn(wt) * fmin(fabs(wt), 127);
-    float dw = wt - wt_prev;
-    w_out += dw;
-    we -= dw;
-    wt_prev = wt;
+    if(fabs(we) > tolerance) {
+      wt += math::Math::sgn(we) * accelw * dt;
+      wt = math::Math::sgn(wt) * fmin(fabs(wt), 127);
+      float dw = wt - wt_prev;
+      w_out += dw;
+      we -= dw;
+      wt_prev = wt;
+    }
 
-    move_left(v_out + w_out);
-    move_right(v_out - w_out);
-
+    if (input::Digital::pressing(input::Button::X)) {
+      move_left(input::Analog::get_left_y() + input::Analog::get_right_x());
+      move_right(input::Analog::get_left_y() - input::Analog::get_right_x());
+    }
+    else {
+      move_left(v_out + w_out);
+      move_right(v_out - w_out);
+    }
     // pros::delay(1000 * dt);
 
     // left_y_output += accel_time * left_y_error;
