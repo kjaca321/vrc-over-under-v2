@@ -14,10 +14,10 @@ Driver::Driver(std::vector<int> left_ports, std::vector<int> right_ports,
                float wheel, float speed, int imu1, float trackw)
     : PositionTracker(left_ports, right_ports, wheel, speed, imu1),
       control_type("arcade"), curve(1), map_type("logistic"), accel_time(0.01),
-      brake_thresh(0), trackwidth(trackw), turn_sens(1), left_y_error(0), left_y_output(0),
-      left_x_error(0), left_x_output(0), right_y_error(0), right_y_output(0),
-      right_x_error(0), right_x_output(0), left_velocity(0), right_velocity(0),
-      left_final_velocity(0), right_final_velocity(0),
+      brake_thresh(0), trackwidth(trackw), turn_sens(1), left_y_error(0),
+      left_y_output(0), left_x_error(0), left_x_output(0), right_y_error(0),
+      right_y_output(0), right_x_error(0), right_x_output(0), left_velocity(0),
+      right_velocity(0), left_final_velocity(0), right_final_velocity(0),
       driver_max_velocity(127) {}
 
 void Driver::straight(float distance) {
@@ -64,6 +64,15 @@ void Driver::control() {
     float ve = input::Analog::get_left_y() - v_out;
     float we = input::Analog::get_right_x() - w_out;
 
+    if (math::Math::sgn(ve) < 0)
+      accel = 400;
+    else
+      accel = 370;
+    if (math::Math::sgn(we) < 0)
+      accelw = 460;
+    else
+      accelw = 430;
+
     if (fabs(ve) > tolerance) {
       vt += math::Math::sgn(ve) * accel * dt;
       vt = math::Math::sgn(vt) * fmin(fabs(vt), 127);
@@ -73,7 +82,7 @@ void Driver::control() {
       vt_prev = vt;
     }
 
-    if(fabs(we) > tolerance) {
+    if (fabs(we) > tolerance) {
       wt += math::Math::sgn(we) * accelw * dt;
       wt = math::Math::sgn(wt) * fmin(fabs(wt), 127);
       float dw = wt - wt_prev;
@@ -82,11 +91,10 @@ void Driver::control() {
       wt_prev = wt;
     }
 
-    if (input::Digital::pressing(input::Button::X)) {
+    if (input::Digital::pressing(input::Button::L2)) {
       move_left(input::Analog::get_left_y() + input::Analog::get_right_x());
       move_right(input::Analog::get_left_y() - input::Analog::get_right_x());
-    }
-    else {
+    } else {
       move_left(v_out + w_out);
       move_right(v_out - w_out);
     }

@@ -1,9 +1,12 @@
 #include "main.h"
 
 void initialize() {
+  hang1.set(1);
+  hang2.set(1);
   robot.setup();
-  master.rumble("-");
+  // master.rumble("-");
   robot.set_controller_tuning("arcade", 1, "exponential", 0.02, 10, 0.95);
+  master.rumble("-");
 }
 
 void disabled() {}
