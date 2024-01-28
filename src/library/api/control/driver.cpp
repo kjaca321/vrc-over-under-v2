@@ -21,6 +21,8 @@ Driver::Driver(std::vector<int> left_ports, std::vector<int> right_ports,
       driver_max_velocity(127) {}
 
 void Driver::straight(float distance) {
+  float dir = math::Math::sgn(distance);
+  distance = std::abs(distance);
   Trajectory1D path(distance);
   float kv = 1.3, ka = 0.03, kp = .7;
   for (math::Pose1D pose : path.get()) {
@@ -29,31 +31,76 @@ void Driver::straight(float distance) {
     float des_acc = pose.acc;
     float out = kv * des_vel + ka * des_acc +
                 kp * (des_vel - (get_left_vel() + get_right_vel()) / 2);
-    move(out);
+    move(dir * out);
     pros::delay(10);
   }
 }
 
+// void Driver::turn_pt(math::Angle desired_heading) {
+//   float targ = desired_heading.radians().get();
+//   float curr = get_heading().get();
+//   math::Angle raw_ang_dist =
+//       math::Angle(math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
+//   float component = raw_ang_dist.get();
+//   float dir = math::Math::sgn(component);
+//   math::Angle ang_dist = math::Angle(std::abs(component), math::Unit::RADIANS);
+//   AngularTrajectory path(ang_dist);
+//   float kv = 8, ka = 0.05, kp = 2;
+//   for (math::Pose1D pose : path.get()) {
+//     float des_dist = pose.pos;
+//     float omega = pose.vel;
+//     float alpha = pose.acc;
+//     float left = omega * trackwidth / 2;
+//     float right = -omega * trackwidth / 2;
+//     float left_out = kv * left + kp * (left - get_left_vel());
+//     float right_out = kv * right + kp * (right - get_right_vel());
+//     move_left(dir * left_out);
+//     move_right(dir * right_out);
+//     pros::delay(10);
+//   }
+// }
+
 void Driver::turn_pt(math::Angle desired_heading) {
-  float targ = desired_heading.get();
+  float targ = desired_heading.radians().get();
   float curr = get_heading().get();
-  math::Angle ang_dist =
+  float tol = .5, prev = 0, integ = 0, int_thresh = 0.5;
+  math::Angle raw_ang_dist =
       math::Angle(math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
-  AngularTrajectory path(ang_dist);
-  float kv = 7, ka = 0.05, kp = 3;
-  for (math::Pose1D pose : path.get()) {
-    float des_dist = pose.pos;
-    float omega = pose.vel;
-    float alpha = pose.acc;
-    float left = omega * trackwidth / 2;
-    float right = -omega * trackwidth / 2;
-    float left_out = kv * left + kp * (left - get_left_vel());
-    float right_out = kv * right + kp * (right - get_right_vel());
-    move_left(left_out);
-    move_right(right_out);
-    pros::delay(10);
+  float err = raw_ang_dist.get();
+  while (1) {
+    targ = desired_heading.radians().get();
+    curr = get_heading().get();
+    math::Angle raw_ang_dist =
+        math::Angle(math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
+    err = raw_ang_dist.get();
+    float i = 230, f = 15, p = 2, k = 80;
+    float kp = .6, kd = 12, ki = 6;
+    float der = (err - prev);
+    if (err < int_thresh) integ += err;
+    prev = err;
+    float func = (-(i-f)*std::pow(fabs(err), p))/(std::pow(fabs(err), p) + std::pow(k, p)) + i;
+    float f_p =  kp * func * err;
+    float f_d = kd * der;
+    float f_i = ki * integ;
+
+    float ratio = (fabs(f_p) + fabs(f_d) + fabs(f_i)) / 127;
+    if (ratio > 1) {
+      f_p /= ratio;
+      f_d /= ratio;
+      f_i /= ratio;
+    }
+    // float outr = f_p + f_d + f_i;
+    float outr = kp * func * err;
+
+    float out = math::Math::sgn(outr) * fabs(fmax(f, fmin(127, fabs(outr))));
+    move_left(out);
+    move_right(-out);
+    std::cout << "err:" << err << ", func:" << func << ", out:" << out << std::endl;
+    pros::delay(20);
+    // if(fabs(err) < tol) break;
   }
 }
+
 
 void Driver::control() {
   float v_out = 0, w_out = 0, dt = 0.01, tolerance = 0.8;

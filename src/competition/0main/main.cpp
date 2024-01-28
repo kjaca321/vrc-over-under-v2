@@ -13,7 +13,37 @@ void disabled() {}
 
 void competition_initialize() {}
 
-void autonomous() {}
+void autonomous() {
+  Trajectory1D::set_constraints(75, 180, 5);
+  AngularTrajectory::set_constraints(12, 30, .1);
+  run_auton_sequence();
+
+  robot.turn_pt(Angle(-45, Unit::DEGREES));
+  robot.stop();
+
+  // sys_task::hang_req = 0;
+  // sys_task::intake_req = 1;
+  // Trajectory1D::set_constraints(75, 180, 15);
+  // robot.straight(12);
+  // Trajectory1D::set_constraints(75, 180, 5);
+  // robot.straight(-34.5);
+  // robot.stop();
+  // sys_task::intake_req = 0;
+  // robot.turn_pt(Angle(-26, Unit::DEGREES));
+  // robot.stop();
+  // sys_task::left_wing_req = 1;
+  // robot.straight(-24);
+  // sys_task::left_wing_req = 0;
+  // robot.turn_pt(Angle(-110, Unit::DEGREES));
+  // robot.stop();
+  // sys_task::right_wing_req = 1;
+  // Trajectory1D::set_constraints(75, 180, 50);
+  // robot.straight(-20);
+  // robot.stop();
+  // sys_task::right_wing_req = 0;
+  kill_auton_sequence();
+
+}
 
 void opcontrol() {
   // Trajectory1D::set_constraints(75, 230, 5);

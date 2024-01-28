@@ -15,15 +15,13 @@
   in.remove();                                                                 \
   odom.remove();
 
-// #define run_auton_sequence()                                                   \
-//   pros::Task odom(system_threads::odometry);                                   \
-//   pros::Task c(system_threads::run_cata);                                      \
-//   pros::Task d(system_threads::cycle_digitals);
+#define run_auton_sequence()                                                   \
+  pros::Task odom(system_threads::odometry);                              \
+  pros::Task sys(system_threads::run_sys);
 
-// #define kill_auton_sequence()                                                  \
-//   odom.remove();                                                               \
-//   c.remove();                                                                  \
-//   d.remove();
+#define kill_auton_sequence()                                                  \
+  odom.remove();                                                               \
+  sys.remove();
 
 namespace system_threads {
 

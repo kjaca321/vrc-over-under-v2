@@ -17,6 +17,14 @@ void AngularTrajectory::set_constraints(float in_vel, float in_accel,
   global_min_velocity = in_min_vel;
 }
 
+void AngularTrajectory::set_constraints(float in_vel, float in_accel,
+                                        float in_min_vel, float in_trackw) {
+  global_max_velocity = in_vel;
+  global_max_acceleration = in_accel;
+  global_min_velocity = in_min_vel;
+  global_trackwidth = in_trackw;
+}
+
 AngularTrajectory::AngularTrajectory(math::Angle desired_delta_heading) {
   total_angle = desired_delta_heading.radians().get();
   ang_acc = global_max_acceleration, ang_vel0 = global_min_velocity,
@@ -40,7 +48,6 @@ AngularTrajectory::AngularTrajectory(math::Angle desired_delta_heading) {
 
   internal_max_vel = std::min(ang_vels, factor);
   ang_vel = internal_max_vel;
-
   float ang_trav = 0;
   float time = 0;
   trajectory = {};
