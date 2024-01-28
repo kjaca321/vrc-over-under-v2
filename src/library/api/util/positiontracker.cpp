@@ -62,6 +62,7 @@ void PositionTracker::run_tracker() {
     prev_angular_vel = angular_vel;
 
     heading = math::Angle(heading.get() + delta.get(), math::Unit::RADIANS);
+    // heading = curr_heading;
     prev_heading_i = math::Angle(curr_heading.get(), math::Unit::RADIANS);
 
     float pos = (get_raw_left_pos() + get_raw_right_pos()) / 2.0, d_pos_local;
@@ -106,9 +107,10 @@ void PositionTracker::run_tracker() {
 
     relative_distance += speed;
 
-    pros::Task::delay_until(&nw, odom_dt * 1000);
+    pros::lcd::print(0, "heading: %f", heading.degrees().get());
+    pros::lcd::print(1, "currheading: %f", curr_heading.degrees().get());
 
-    pros::lcd::print(0, "");
+    pros::Task::delay_until(&nw, odom_dt * 1000);
   }
 }
 

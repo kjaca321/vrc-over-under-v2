@@ -40,13 +40,13 @@ void Driver::straight(float distance) {
 //   float targ = desired_heading.radians().get();
 //   float curr = get_heading().get();
 //   math::Angle raw_ang_dist =
-//       math::Angle(math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
+//       math::Angle(math::Math::find_min_angle(targ, curr),
+//       math::Unit::RADIANS);
 //   float component = raw_ang_dist.get();
 //   float dir = math::Math::sgn(component);
-//   math::Angle ang_dist = math::Angle(std::abs(component), math::Unit::RADIANS);
-//   AngularTrajectory path(ang_dist);
-//   float kv = 8, ka = 0.05, kp = 2;
-//   for (math::Pose1D pose : path.get()) {
+//   math::Angle ang_dist = math::Angle(std::abs(component),
+//   math::Unit::RADIANS); AngularTrajectory path(ang_dist); float kv = 8, ka =
+//   0.05, kp = 2; for (math::Pose1D pose : path.get()) {
 //     float des_dist = pose.pos;
 //     float omega = pose.vel;
 //     float alpha = pose.acc;
@@ -63,44 +63,54 @@ void Driver::straight(float distance) {
 void Driver::turn_pt(math::Angle desired_heading) {
   float targ = desired_heading.radians().get();
   float curr = get_heading().get();
-  float tol = .5, prev = 0, integ = 0, int_thresh = 0.5;
+  float tol = 3.75, prev = 0, integ = 0, int_thresh = 0.5;
   math::Angle raw_ang_dist =
       math::Angle(math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
   float err = raw_ang_dist.get();
+  float err_deg = raw_ang_dist.degrees().get();
+  float i = 600, f = 20, p = 0.843, k = 4.62;
+  float kp = ((f - i) * std::pow(fabs(err_deg), p)) /
+                 (std::pow(fabs(err_deg), p) + std::pow(k, p)) +
+             i;
   while (1) {
     targ = desired_heading.radians().get();
     curr = get_heading().get();
-    math::Angle raw_ang_dist =
-        math::Angle(math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
+    math::Angle raw_ang_dist = math::Angle(
+        math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
     err = raw_ang_dist.get();
-    float i = 230, f = 15, p = 2, k = 80;
-    float kp = .6, kd = 12, ki = 6;
-    float der = (err - prev);
-    if (err < int_thresh) integ += err;
-    prev = err;
-    float func = (-(i-f)*std::pow(fabs(err), p))/(std::pow(fabs(err), p) + std::pow(k, p)) + i;
-    float f_p =  kp * func * err;
-    float f_d = kd * der;
-    float f_i = ki * integ;
 
-    float ratio = (fabs(f_p) + fabs(f_d) + fabs(f_i)) / 127;
-    if (ratio > 1) {
-      f_p /= ratio;
-      f_d /= ratio;
-      f_i /= ratio;
-    }
-    // float outr = f_p + f_d + f_i;
-    float outr = kp * func * err;
+    // float kp = .6, kd = 12, ki = 6;
+    // float der = (err - prev);
+    // if (err < int_thresh)
+    //   integ += err;
+    // prev = err;
 
-    float out = math::Math::sgn(outr) * fabs(fmax(f, fmin(127, fabs(outr))));
+    // float f_p = kp * func * err;
+    // float f_d = kd * der;
+    // float f_i = ki * integ;
+
+    // float ratio = (fabs(f_p) + fabs(f_d) + fabs(f_i)) / 127;
+    // if (ratio > 1) {
+    //   f_p /= ratio;
+    //   f_d /= ratio;
+    //   f_i /= ratio;
+    // }
+    // // float outr = f_p + f_d + f_i;
+    // float outr = kp * func * err;
+
+    // float out = math::Math::sgn(outr) * fabs(fmax(f, fmin(127, fabs(outr))));
+    float kd = 1;
+    float out = kp * err;
     move_left(out);
     move_right(-out);
-    std::cout << "err:" << err << ", func:" << func << ", out:" << out << std::endl;
-    pros::delay(20);
-    // if(fabs(err) < tol) break;
+    pros::lcd::print(2, "out: %f", out);
+    // std::cout << "err:" << err << ", func:" << func << ", out:" << out
+    //           << std::endl;
+    pros::delay(10);
+    if (fabs(out) < tol)
+      break;
   }
 }
-
 
 void Driver::control() {
   float v_out = 0, w_out = 0, dt = 0.01, tolerance = 0.8;

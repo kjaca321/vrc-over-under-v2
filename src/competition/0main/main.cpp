@@ -6,6 +6,7 @@ void initialize() {
   robot.setup();
   // master.rumble("-");
   robot.set_controller_tuning("arcade", 1, "exponential", 0.02, 10, 0.95);
+  pros::lcd::initialize();
   master.rumble("-");
 }
 
@@ -18,7 +19,7 @@ void autonomous() {
   AngularTrajectory::set_constraints(12, 30, .1);
   run_auton_sequence();
 
-  robot.turn_pt(Angle(-45, Unit::DEGREES));
+  robot.turn_pt(Angle(135, Unit::DEGREES));
   robot.stop();
 
   // sys_task::hang_req = 0;
@@ -42,7 +43,6 @@ void autonomous() {
   // robot.stop();
   // sys_task::right_wing_req = 0;
   kill_auton_sequence();
-
 }
 
 void opcontrol() {
