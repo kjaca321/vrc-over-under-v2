@@ -60,10 +60,10 @@ void Driver::straight(float distance) {
 //   }
 // }
 
-void Driver::turn_pt(math::Angle desired_heading) {
+void Driver::turn_pt(math::Angle desired_heading, bool rough) {
   float targ = desired_heading.radians().get();
   float curr = get_heading().get();
-  float tol = 3.75, prev = 0, integ = 0, int_thresh = 0.5;
+  float tol = 1, tol2 = 11, prev = 0, integ = 0, int_thresh = 0.5;
   math::Angle raw_ang_dist =
       math::Angle(math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
   float err = raw_ang_dist.get();
@@ -72,6 +72,12 @@ void Driver::turn_pt(math::Angle desired_heading) {
   float kp = ((f - i) * std::pow(fabs(err_deg), p)) /
                  (std::pow(fabs(err_deg), p) + std::pow(k, p)) +
              i;
+  if(rough) {
+    tol += 15;
+    tol2 += 15;
+    kp += 7;
+  }
+
   while (1) {
     targ = desired_heading.radians().get();
     curr = get_heading().get();
@@ -99,16 +105,22 @@ void Driver::turn_pt(math::Angle desired_heading) {
     // float outr = kp * func * err;
 
     // float out = math::Math::sgn(outr) * fabs(fmax(f, fmin(127, fabs(outr))));
-    float kd = 1;
     float out = kp * err;
     move_left(out);
     move_right(-out);
-    pros::lcd::print(2, "out: %f", out);
+    // pros::lcd::print(2, "out: %f", out);
     // std::cout << "err:" << err << ", func:" << func << ", out:" << out
     //           << std::endl;
     pros::delay(10);
-    if (fabs(out) < tol)
-      break;
+    float cond = (fabs(get_left_vel()) + fabs(get_right_vel()))/2;
+    if(rough) {
+      if (fabs(out) < tol2)
+        break;      
+    }
+    else {
+      if (fabs(out) < tol2 && fabs(err) < tol)
+        break;
+    }
   }
 }
 

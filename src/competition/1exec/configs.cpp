@@ -11,3 +11,6 @@ DigitalSystem left_wing('G'), right_wing('H');
 
 pros::Motor cata(-20);
 pros::Motor intake(15);
+
+pros::ADIDigitalIn auton_select('B');
+pros::ADIDigitalIn auton_calibrate('A');

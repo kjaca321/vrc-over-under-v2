@@ -14,9 +14,9 @@ void run_systems() {
 
     intake.set_brake_mode(BrakeType::HOLD);
     if (intake_req)
-      intake.move(127);
+      intake.move(intake_speed);
     else if (intake_rev_req)
-      intake.move(-127);
+      intake.move(-intake_speed);
     else
       intake.brake();
 
@@ -58,5 +58,6 @@ void run_input() {
 bool cata_req = 0, front_wings_req = 0, wings_req = 0, hang_req = 0,
      left_wing_req = 0, right_wing_req = 0, intake_req = 0, intake_rev_req = 0,
      accel_off = 0;
+float intake_speed = 127;
 
 } // namespace sys_task

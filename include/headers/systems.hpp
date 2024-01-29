@@ -23,6 +23,11 @@
   odom.remove();                                                               \
   sys.remove();
 
+#define run_master_auton()                                                     \
+  run_auton_sequence();                                                        \
+  auton::run_auton();                                                            \
+  kill_auton_sequence();
+
 namespace system_threads {
 
 inline void drive_chassis(void *param) { robot.control(); }
