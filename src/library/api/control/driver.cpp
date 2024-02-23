@@ -126,8 +126,8 @@ void Driver::turn_pt(math::Angle desired_heading, bool rough) {
 
 void Driver::control() {
   float v_out = 0, w_out = 0, dt = 0.01, tolerance = 0.8;
-  float accel_static = 820, vt = 0, vt_prev = 0;
-  float accelw_static = 1500, wt = 0, wt_prev = 0;
+  float accel_static = 1000, vt = 0, vt_prev = 0;
+  float accelw_static = 1600, wt = 0, wt_prev = 0;
   float accel, accelw;
   while (1) {
     set_brake(utility::BrakeType::COAST);
@@ -136,11 +136,11 @@ void Driver::control() {
     float we = input::Analog::get_right_x() - w_out;
 
     if (math::Math::sgn(ve) < 0)
-      accel = accel_static + 150;
+      accel = accel_static + 300;
     else
       accel = accel_static;
     if (math::Math::sgn(we) < 0)
-      accelw = accelw_static + 150;
+      accelw = accelw_static + 300;
     else
       accelw = accelw_static;
 
@@ -162,17 +162,17 @@ void Driver::control() {
       wt_prev = wt;
     }
 
-    if (input::Digital::pressing(input::Button::L2)) {
-      float lvel = input::Analog::get_left_y() + input::Analog::get_right_x();
-      float rvel = input::Analog::get_left_y() - input::Analog::get_right_x();
-      float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
-      if (ratio > 1) {
-        lvel /= ratio;
-        rvel /= ratio;
-      }
-      move_left(lvel);
-      move_right(rvel);
-    } else {
+    // if (input::Digital::pressing(input::Button::L2)) {
+      // float lvel = input::Analog::get_left_y() + input::Analog::get_right_x();
+      // float rvel = input::Analog::get_left_y() - input::Analog::get_right_x();
+    //   float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
+    //   if (ratio > 1) {
+    //     lvel /= ratio;
+    //     rvel /= ratio;
+    //   }
+    //   move_left(lvel);
+    //   move_right(rvel);
+    // } else {
       float n = input::Analog::get_right_x();
       float lvel = v_out + n;
       float rvel = v_out - n;
@@ -183,7 +183,7 @@ void Driver::control() {
       }
       move_left(lvel);
       move_right(rvel);
-    }
+    // }
 
     pros::Task::delay_until(&nw, 1000 * dt);
   }
