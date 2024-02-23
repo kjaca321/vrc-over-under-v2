@@ -72,7 +72,7 @@ void Driver::turn_pt(math::Angle desired_heading, bool rough) {
   float kp = ((f - i) * std::pow(fabs(err_deg), p)) /
                  (std::pow(fabs(err_deg), p) + std::pow(k, p)) +
              i;
-  if(rough) {
+  if (rough) {
     tol += 15;
     tol2 += 15;
     kp += 7;
@@ -112,12 +112,11 @@ void Driver::turn_pt(math::Angle desired_heading, bool rough) {
     // std::cout << "err:" << err << ", func:" << func << ", out:" << out
     //           << std::endl;
     pros::delay(10);
-    float cond = (fabs(get_left_vel()) + fabs(get_right_vel()))/2;
-    if(rough) {
+    float cond = (fabs(get_left_vel()) + fabs(get_right_vel())) / 2;
+    if (rough) {
       if (fabs(out) < tol2)
-        break;      
-    }
-    else {
+        break;
+    } else {
       if (fabs(out) < tol2 && fabs(err) < tol)
         break;
     }
@@ -163,8 +162,8 @@ void Driver::control() {
     }
 
     // if (input::Digital::pressing(input::Button::L2)) {
-      // float lvel = input::Analog::get_left_y() + input::Analog::get_right_x();
-      // float rvel = input::Analog::get_left_y() - input::Analog::get_right_x();
+    // float lvel = input::Analog::get_left_y() + input::Analog::get_right_x();
+    // float rvel = input::Analog::get_left_y() - input::Analog::get_right_x();
     //   float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
     //   if (ratio > 1) {
     //     lvel /= ratio;
@@ -173,16 +172,16 @@ void Driver::control() {
     //   move_left(lvel);
     //   move_right(rvel);
     // } else {
-      float n = input::Analog::get_right_x();
-      float lvel = v_out + n;
-      float rvel = v_out - n;
-      float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
-      if (ratio > 1) {
-        lvel /= ratio;
-        rvel /= ratio;
-      }
-      move_left(lvel);
-      move_right(rvel);
+    float n = input::Analog::get_right_x();
+    float lvel = v_out + n;
+    float rvel = v_out - n;
+    float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
+    if (ratio > 1) {
+      lvel /= ratio;
+      rvel /= ratio;
+    }
+    move_left(lvel);
+    move_right(rvel);
     // }
 
     pros::Task::delay_until(&nw, 1000 * dt);

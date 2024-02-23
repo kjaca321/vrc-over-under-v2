@@ -26,18 +26,18 @@ void run_selection() {
     case 1:
       auton_str = "safe 6b     ";
       break;
-    // case 2:
-    //   auton_str = "close elims ";
-    //   break;
-    // case 3:
-    //   auton_str = "far quals   ";
-    //   break;
-    // case 4:
-    //   auton_str = "far elims   ";
-    //   break;
-    // case 5:
-    //   auton_str = "skills      ";
-    //   break;
+      // case 2:
+      //   auton_str = "close elims ";
+      //   break;
+      // case 3:
+      //   auton_str = "far quals   ";
+      //   break;
+      // case 4:
+      //   auton_str = "far elims   ";
+      //   break;
+      // case 5:
+      //   auton_str = "skills      ";
+      //   break;
     }
     master.print(0, 0, "%s", auton_str);
     pros::lcd::print(0, "%s", auton_str);

@@ -8,7 +8,7 @@ void run_systems() {
 
     cata.set_brake_mode(BrakeType::HOLD);
     if (cata_req)
-      cata.move(127*.8);
+      cata.move(127 * .8);
     else
       cata.brake();
 
@@ -38,19 +38,6 @@ void run_input() {
     intake_rev_req = Digital::pressing(Button::L1);
     front_wings_req = Digital::pressing(Button::R2);
     wings_req = Digital::pressing(Button::L2);
-    // if (Digital::pressing(Button::R1)) {
-    //   if(Digital::pressing(Button::L2)) {
-    //     intake_req = 0;
-    //     wings_req = 1;
-    //   }
-    //   else {
-    //     intake_req = 1;
-    //     wings_req = 0;
-    //   }
-    // } else {
-    //   intake_req = 0;
-    //   wings_req = 0;
-    // }
     hang_req = Button::b_pressed;
     pros::Task::delay_until(&nw, 5);
   }

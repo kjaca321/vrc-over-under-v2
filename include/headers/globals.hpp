@@ -15,6 +15,7 @@ void run_auton(void);
 
 extern uint32_t max_time;
 extern unsigned int selected_auton, num_autons;
+extern float MAX_SPEED, MAX_ACCEL;
 
 }; // namespace auton
 

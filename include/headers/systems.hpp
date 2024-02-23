@@ -16,7 +16,7 @@
   odom.remove();
 
 #define run_auton_sequence()                                                   \
-  pros::Task odom(system_threads::odometry);                              \
+  pros::Task odom(system_threads::odometry);                                   \
   pros::Task sys(system_threads::run_sys);
 
 #define kill_auton_sequence()                                                  \
@@ -25,7 +25,7 @@
 
 #define run_master_auton()                                                     \
   run_auton_sequence();                                                        \
-  auton::run_auton();                                                            \
+  auton::run_auton();                                                          \
   kill_auton_sequence();
 
 namespace system_threads {
