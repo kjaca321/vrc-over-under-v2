@@ -21,23 +21,20 @@ void run_selection() {
     std::string auton_str;
     switch (selected_auton) {
     case 0:
-      auton_str = "safe 6b     ";
+      auton_str = "none         ";
       break;
     case 1:
-      auton_str = "safe 6b     ";
+      auton_str = "safe 6b      ";
       break;
-      // case 2:
-      //   auton_str = "close elims ";
-      //   break;
-      // case 3:
-      //   auton_str = "far quals   ";
-      //   break;
-      // case 4:
-      //   auton_str = "far elims   ";
-      //   break;
-      // case 5:
-      //   auton_str = "skills      ";
-      //   break;
+    case 2:
+      auton_str = "safe close   ";
+      break;
+    case 3:
+      auton_str = "rush close   ";
+      break;
+    case 4:
+      auton_str = "skills       ";
+      break;
     }
     master.print(0, 0, "%s", auton_str);
     pros::lcd::print(0, "%s", auton_str);
@@ -49,10 +46,21 @@ void run_selection() {
 void run_auton() {
   switch (selected_auton) {
   case 0:
-    auton::safe_6b();
+    sys_task::intake_req = 1;
+    pros::delay(1000);
+    sys_task::intake_req = 0;
     break;
   case 1:
     auton::safe_6b();
+    break;
+  case 2:
+    auton::safe_close();
+    break;
+  case 3:
+    auton::rush_close();
+    break;
+  case 4:
+    auton::skills();
     break;
   }
 }

@@ -7,7 +7,7 @@ DigitalSystem front_wings('D');
 
 DigitalSystem hang1('C'), hang2('F');
 
-DigitalSystem left_wing('G'), right_wing('H');
+DigitalSystem left_wing('H'), right_wing('G');
 
 pros::Motor cata(16);
 pros::Motor intake(5);

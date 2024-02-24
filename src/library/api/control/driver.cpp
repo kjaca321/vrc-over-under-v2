@@ -36,90 +36,58 @@ void Driver::straight(float distance) {
   }
 }
 
-// void Driver::turn_pt(math::Angle desired_heading) {
-//   float targ = desired_heading.radians().get();
-//   float curr = get_heading().get();
-//   math::Angle raw_ang_dist =
-//       math::Angle(math::Math::find_min_angle(targ, curr),
-//       math::Unit::RADIANS);
-//   float component = raw_ang_dist.get();
-//   float dir = math::Math::sgn(component);
-//   math::Angle ang_dist = math::Angle(std::abs(component),
-//   math::Unit::RADIANS); AngularTrajectory path(ang_dist); float kv = 8, ka =
-//   0.05, kp = 2; for (math::Pose1D pose : path.get()) {
-//     float des_dist = pose.pos;
-//     float omega = pose.vel;
-//     float alpha = pose.acc;
-//     float left = omega * trackwidth / 2;
-//     float right = -omega * trackwidth / 2;
-//     float left_out = kv * left + kp * (left - get_left_vel());
-//     float right_out = kv * right + kp * (right - get_right_vel());
-//     move_left(dir * left_out);
-//     move_right(dir * right_out);
-//     pros::delay(10);
-//   }
-// }
-
-void Driver::turn_pt(math::Angle desired_heading, bool rough) {
+void Driver::turn_pt(math::Angle desired_heading) {
   float targ = desired_heading.radians().get();
   float curr = get_heading().get();
-  float tol = 1, tol2 = 11, prev = 0, integ = 0, int_thresh = 0.5;
   math::Angle raw_ang_dist =
       math::Angle(math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
+
   float err = raw_ang_dist.get();
   float err_deg = raw_ang_dist.degrees().get();
-  float i = 600, f = 20, p = 0.843, k = 4.62;
+  float i = 716, f = 60, p = 0.92, k = 2.3;
   float kp = ((f - i) * std::pow(fabs(err_deg), p)) /
                  (std::pow(fabs(err_deg), p) + std::pow(k, p)) +
              i;
-  if (rough) {
-    tol += 15;
-    tol2 += 15;
-    kp += 7;
-  }
+  float kd = 400;
+  float prev = 0, min = 15, tol = 0.019, tol2 = .007, timeout = 0, timeout2 = 0, maxtime = 2;
+  float ang, prev_ang = 0;
 
   while (1) {
     targ = desired_heading.radians().get();
     curr = get_heading().get();
     math::Angle raw_ang_dist = math::Angle(
         math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
+
     err = raw_ang_dist.get();
+    float der = (err - prev);
+    prev = err;
 
-    // float kp = .6, kd = 12, ki = 6;
-    // float der = (err - prev);
-    // if (err < int_thresh)
-    //   integ += err;
-    // prev = err;
-
-    // float f_p = kp * func * err;
-    // float f_d = kd * der;
-    // float f_i = ki * integ;
-
-    // float ratio = (fabs(f_p) + fabs(f_d) + fabs(f_i)) / 127;
-    // if (ratio > 1) {
-    //   f_p /= ratio;
-    //   f_d /= ratio;
-    //   f_i /= ratio;
-    // }
-    // // float outr = f_p + f_d + f_i;
-    // float outr = kp * func * err;
-
-    // float out = math::Math::sgn(outr) * fabs(fmax(f, fmin(127, fabs(outr))));
-    float out = kp * err;
+    float out = kp * err + kd * der;
+    if (fabs(out) < min)
+      out = math::Math::sgn(out) * min;
     move_left(out);
     move_right(-out);
-    // pros::lcd::print(2, "out: %f", out);
-    // std::cout << "err:" << err << ", func:" << func << ", out:" << out
-    //           << std::endl;
+    pros::lcd::print(1, "err: %f", err * 180 / M_PI);
+
+    ang = curr;
+    float del_ang = ang - prev_ang;
+    prev_ang = ang;
+
+    if (fabs(err) < tol)
+      timeout++;
+    else
+      timeout = 0;
+
+    if (fabs(del_ang) < tol2)
+      timeout2++;
+    else
+      timeout2 = 0;
+
+    if (timeout >= maxtime || timeout2 >= maxtime+8)
+      break;
+    // if (timeout >= maxtime) break;
+
     pros::delay(10);
-    float cond = (fabs(get_left_vel()) + fabs(get_right_vel())) / 2;
-    if (rough) {
-      if (fabs(out) < tol2)
-        break;
-    } else {
-      if (fabs(out) < tol2 && fabs(err) < tol)
-        break;
-    }
   }
 }
 

@@ -10,6 +10,9 @@ extern pros::ADIDigitalIn auton_calibrate;
 namespace auton {
 
 void safe_6b(void);
+void safe_close(void);
+void rush_close(void);
+void skills(void);
 void run_selection(void);
 void run_auton(void);
 
