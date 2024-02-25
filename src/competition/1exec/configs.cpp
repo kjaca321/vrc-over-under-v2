@@ -13,4 +13,4 @@ pros::Motor cata(16);
 pros::Motor intake(5);
 
 pros::ADIDigitalIn auton_select('B');
-pros::ADIDigitalIn auton_calibrate('A');
+pros::ADIDigitalIn auton_calibrate('E');

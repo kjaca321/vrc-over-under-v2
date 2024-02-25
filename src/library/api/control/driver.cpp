@@ -67,7 +67,6 @@ void Driver::turn_pt(math::Angle desired_heading) {
       out = math::Math::sgn(out) * min;
     move_left(out);
     move_right(-out);
-    pros::lcd::print(1, "err: %f", err * 180 / M_PI);
 
     ang = curr;
     float del_ang = ang - prev_ang;
@@ -132,15 +131,20 @@ void Driver::control() {
     // if (input::Digital::pressing(input::Button::L2)) {
     // float lvel = input::Analog::get_left_y() + input::Analog::get_right_x();
     // float rvel = input::Analog::get_left_y() - input::Analog::get_right_x();
-    //   float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
-    //   if (ratio > 1) {
-    //     lvel /= ratio;
-    //     rvel /= ratio;
-    //   }
-    //   move_left(lvel);
-    //   move_right(rvel);
+      // float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
+      // if (ratio > 1) {
+      //   lvel /= ratio;
+      //   rvel /= ratio;
+      // }
+      // move_left(lvel);
+      // move_right(rvel);
     // } else {
     float n = input::Analog::get_right_x();
+    // float ratio = std::max(std::abs(v_out), std::abs(n)) / 127;
+    // if (ratio > 1) {
+    //   v_out /= ratio;
+    //   n /= ratio;
+    // }
     float lvel = v_out + n;
     float rvel = v_out - n;
     float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
