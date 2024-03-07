@@ -3,7 +3,7 @@
 
 extern Driver robot;
 extern DigitalSystem front_wings, hang1, hang2, left_wing, right_wing;
-extern pros::Motor cata, intake;
+extern pros::Motor cata, cata2, intake, intake2;
 extern pros::ADIDigitalIn auton_select;
 extern pros::ADIDigitalIn auton_calibrate;
 

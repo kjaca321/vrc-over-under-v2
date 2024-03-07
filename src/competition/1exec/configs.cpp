@@ -10,7 +10,9 @@ DigitalSystem hang1('C'), hang2('F');
 DigitalSystem left_wing('H'), right_wing('G');
 
 pros::Motor cata(16);
+pros::Motor cata2(-1);
 pros::Motor intake(5);
+pros::Motor intake2(-9);
 
 pros::ADIDigitalIn auton_select('B');
 pros::ADIDigitalIn auton_calibrate('E');

@@ -5,20 +5,32 @@ namespace sys_task {
 void run_systems() {
   while (1) {
     std::uint32_t nw = pros::millis();
-
+    float pct = .75;
     cata.set_brake_mode(BrakeType::COAST);
-    if (cata_req || master_cata_req)
-      cata.move(127);
-    else
+    cata2.set_brake_mode(BrakeType::COAST);
+    if (cata_req || master_cata_req) {
+      cata.move(127 * pct);
+      cata2.move(127 * pct);
+    }
+    else {
       cata.move(0);
+      cata2.move(0);
+    }
 
     intake.set_brake_mode(BrakeType::HOLD);
-    if (intake_req)
+    intake2.set_brake_mode(BrakeType::HOLD);
+    if (intake_req) {
       intake.move(intake_speed);
-    else if (intake_rev_req)
+      intake2.move(intake_speed);
+    }
+    else if (intake_rev_req) {
       intake.move(-intake_speed);
-    else
+      intake2.move(-intake_speed);
+    }
+    else {
       intake.brake();
+      intake2.brake();
+    }
 
     front_wings.set(front_wings_req);
     hang1.set(hang_req);
