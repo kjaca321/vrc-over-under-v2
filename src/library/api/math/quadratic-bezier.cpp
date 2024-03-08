@@ -14,13 +14,25 @@ namespace lib::math {
 QuadraticBezier::QuadraticBezier(Vector end, float _lead) {
   target = end;
   lead = _lead;
-  arc_length = integral(1) - integral(0);
+  float density = 0.004;
+  arc_length = 0;
+  for (float t = density; t <= 1; t += density) {
+    Vector prev = get_raw(t - density);
+    Vector curr = get_raw(t);
+    float distance = curr.distance(prev);
+    arc_length += distance;
+  }
 }
 
-Vector QuadraticBezier::get(float t) {
+Vector QuadraticBezier::get_raw(float t) {
   float x = t * t * target.x;
   float y = 2 * t * (1 - t) * lead + t * t * target.y;
   return Vector(x, y);
+}
+
+Vector QuadraticBezier::get(float length) {
+  float t = length / arc_length;
+  return get_raw(t);
 }
 
 float QuadraticBezier::integral(float t) {

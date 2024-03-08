@@ -19,9 +19,10 @@ public:
   float arc_length;
   float lead;
   Vector target;
+  Vector get(float length);
 
 private:
-  Vector get(float t);
+  Vector get_raw(float t);
   float integral(float t);
 };
 
