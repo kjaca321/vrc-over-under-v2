@@ -40,7 +40,7 @@ public:
   Driver(std::vector<int> left_ports, std::vector<int> right_ports, float wheel,
          float speed, int imu1, float trackw);
 
-  void follow_prim(Trajectory2D trajectory);
+  void follow_prim(Trajectory2D , int direction);
   void follow_feed(Trajectory2D trajectory);
   void straight(float distance);
   void turn_pt(math::Angle desired_heading);

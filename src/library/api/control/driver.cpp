@@ -36,6 +36,22 @@ void Driver::straight(float distance) {
   }
 }
 
+void Driver::follow_prim(Trajectory2D trajectory, int direction) {
+  float kv = 1.6, ka = 0.03, kp = .7;
+  for (math::Pose2D pose : trajectory.get()) {
+    float des_lin_vel = pose.linear_vel * direction;
+    float des_ang_vel = pose.angular_vel * direction;
+    float des_acc = pose.linear_acc * direction; 
+    float left_control = des_lin_vel + des_ang_vel * trackwidth / 2;
+    float right_control = des_lin_vel - des_ang_vel * trackwidth / 2;
+    float left_out = kv * left_control + ka * des_acc + kp * (left_control - get_left_vel());
+    float right_out = kv * right_control + ka * des_acc + kp * (right_control - get_right_vel());
+    move_left(left_out);
+    move_right(right_out);
+    pros::delay(10);
+  }
+}
+
 void Driver::turn_pt(math::Angle desired_heading) {
   float targ = desired_heading.radians().get();
   float curr = get_heading().get();
@@ -95,6 +111,9 @@ void Driver::control() {
   float accel_static = 1000, vt = 0, vt_prev = 0;
   float accelw_static = 1600, wt = 0, wt_prev = 0;
   float accel, accelw;
+  float max_lin = 127;
+  float max_ang = 127;
+  // float w_deadzone = 85;
   while (1) {
     set_brake(utility::BrakeType::COAST);
     std::uint32_t nw = pros::millis();
@@ -112,7 +131,7 @@ void Driver::control() {
 
     if (fabs(ve) > tolerance) {
       vt += math::Math::sgn(ve) * accel * dt;
-      vt = math::Math::sgn(vt) * fmin(fabs(vt), 127);
+      vt = math::Math::sgn(vt) * fmin(fabs(vt), max_lin);
       float dv = vt - vt_prev;
       v_out += dv;
       ve -= dv;
@@ -121,12 +140,17 @@ void Driver::control() {
 
     if (fabs(we) > tolerance) {
       wt += math::Math::sgn(we) * accelw * dt;
-      wt = math::Math::sgn(wt) * fmin(fabs(wt), 127);
+      wt = math::Math::sgn(wt) * fmin(fabs(wt), max_ang);
       float dw = wt - wt_prev;
       w_out += dw;
       we -= dw;
       wt_prev = wt;
     }
+
+    // if (fabs(w_out) > w_deadzone)
+    //   max_lin = 80;
+    // else 
+    //   max_lin = 127;
 
     // if (input::Digital::pressing(input::Button::L2)) {
     // float lvel = input::Analog::get_left_y() + input::Analog::get_right_x();

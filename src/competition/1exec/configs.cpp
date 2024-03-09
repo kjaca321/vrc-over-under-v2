@@ -1,7 +1,7 @@
 #include "main.h"
 
 Driver robot(std::vector<int>{-11, -13, -14}, std::vector<int>{17, 20, 19},
-             3.25, 450, 15, 8.7);
+             3.25, 450, 15, 11.0);
 
 DigitalSystem front_wings('D');
 

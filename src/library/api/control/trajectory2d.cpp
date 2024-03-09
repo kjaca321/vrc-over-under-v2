@@ -25,15 +25,27 @@ void Trajectory2D::set_constraints(float in_vel, float in_accel,
   global_trackwidth = in_trackw;
 }
 
-Trajectory2D::Trajectory2D(std::vector<math::Vector> raw_path, float c, float b,
+Trajectory2D::Trajectory2D(math::CubicBezier raw_path, float c, float b,
                            float k)
     : spacing(c), dampener(b), arc_constant(k) {
 
   total_distance = 0;
-  std::vector<math::Vector> spline = raw_path;
+  std::vector<math::Vector> spline = {};
 
-  for (int i = 1; i < spline.size(); i++)
-    total_distance += spline[i].distance(spline[i - 1]);
+  float density = 0.01;
+  for (float t = density; t <= 1; t += density) {
+    math::Vector prev = raw_path.get_raw(t - density);
+    math::Vector curr = raw_path.get_raw(t);
+    float d = curr.distance(prev);
+    total_distance += d;
+    spline.push_back(prev);
+  }
+  spline.push_back(raw_path.get_raw(1));
+
+
+
+  // for (int i = 1; i < spline.size(); i++)
+  //   total_distance += spline[i].distance(spline[i - 1]);
 
   acc = global_max_acceleration, dist = total_distance,
   vels = global_max_velocity, vel0 = global_min_velocity;
@@ -46,6 +58,12 @@ Trajectory2D::Trajectory2D(std::vector<math::Vector> raw_path, float c, float b,
   vel = internal_max_vel;
 
   path = generate_path(spline);
+
+  // for (math::Point i : path) {
+  //   std::cout << i.to_string_full() << std::endl;
+  //   pros::delay(20);
+  // }
+
   float dist_trav = 0;
   float time = 0;
   trajectory = {};
@@ -70,15 +88,25 @@ Trajectory2D::Trajectory2D(std::vector<math::Vector> raw_path, float c, float b,
   }
 }
 
-Trajectory2D::Trajectory2D(std::vector<math::Vector> raw_path,
+Trajectory2D::Trajectory2D(math::CubicBezier raw_path,
                            std::vector<math::Vector> speeds, float c, float b,
                            float k) {
 
   total_distance = 0;
-  std::vector<math::Vector> spline = raw_path;
+  std::vector<math::Vector> spline = {};
 
-  for (int i = 1; i < spline.size(); i++)
-    total_distance += spline[i].distance(spline[i - 1]);
+  float density = 0.005;
+  for (float t = density; t <= 1; t += density) {
+    math::Vector prev = raw_path.get_raw(t - density);
+    math::Vector curr = raw_path.get_raw(t);
+    float d = curr.distance(prev);
+    total_distance += d;
+    spline.push_back(prev);
+  }
+  spline.push_back(raw_path.get_raw(1));
+
+  // for (int i = 1; i < spline.size(); i++)
+  //   total_distance += spline[i].distance(spline[i - 1]);
 
   acc = global_max_acceleration, dist = total_distance,
   vels = global_max_velocity, vel0 = global_min_velocity;
@@ -99,6 +127,7 @@ Trajectory2D::Trajectory2D(std::vector<math::Vector> raw_path,
   vel = internal_max_vel;
 
   path = generate_path(spline);
+
   float dist_trav = 0;
   float time = 0;
   trajectory = {};
@@ -110,7 +139,7 @@ Trajectory2D::Trajectory2D(std::vector<math::Vector> raw_path,
       }
     vel = internal_max_vel;
     math::Pose2D kinematics = get_kinematics(dist_trav);
-    float lin = kinematics.linear_vel, curv = kinematics.angular_vel, tr = 12;
+    float lin = kinematics.linear_vel, curv = kinematics.angular_vel, tr = 11;
     float current_acc = kinematics.linear_acc;
     float lvel = lin * (2 + curv * tr) / 2;
     float rvel = lin * (2 - curv * tr) / 2;
