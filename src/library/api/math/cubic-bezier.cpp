@@ -26,8 +26,9 @@ CubicBezier::CubicBezier(Vector _guide, Vector end, float _lead) {
 }
 
 Vector CubicBezier::get_raw(float t) {
-  float x = 3*t*t*(1-t)*guide.x + t*t*t*target.x;
-  float y = 3*t*(1-t)*(1-t)*lead + 3*t*t*(1-t)*guide.y + t*t*t*target.y;
+  float x = 3 * t * t * (1 - t) * guide.x + t * t * t * target.x;
+  float y = 3 * t * (1 - t) * (1 - t) * lead + 3 * t * t * (1 - t) * guide.y +
+            t * t * t * target.y;
   return Vector(x, y);
 }
 

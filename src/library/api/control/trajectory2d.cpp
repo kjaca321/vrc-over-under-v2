@@ -32,20 +32,49 @@ Trajectory2D::Trajectory2D(math::CubicBezier raw_path, float c, float b,
   total_distance = 0;
   std::vector<math::Vector> spline = {};
 
-  float density = 0.01;
+  float density = 0.02;
+  std::vector<float> lengths = {};
   for (float t = density; t <= 1; t += density) {
     math::Vector prev = raw_path.get_raw(t - density);
     math::Vector curr = raw_path.get_raw(t);
     float d = curr.distance(prev);
+    lengths.push_back(total_distance);
     total_distance += d;
-    spline.push_back(prev);
   }
-  spline.push_back(raw_path.get_raw(1));
 
+  int num_pts = (int)(1 / density);
 
+  float map_dist;
 
-  // for (int i = 1; i < spline.size(); i++)
-  //   total_distance += spline[i].distance(spline[i - 1]);
+  for (float u = 0; u <= 1; u += density) {
+
+    float targ_length = u * lengths[num_pts - 1];
+
+    int low = 0, high = num_pts, idx = 0;
+    while (low < high) {
+      idx = low + (((high - low) / 2) | 0);
+      if (lengths[idx] < targ_length) {
+        low = idx + 1;
+
+      } else {
+        high = idx;
+      }
+    }
+    if (lengths[idx] > targ_length) {
+      idx--;
+    }
+
+    float prev_length = lengths[idx];
+    if (prev_length == targ_length) {
+      map_dist = (float)idx / num_pts;
+    } else {
+      map_dist = (idx + (targ_length - prev_length) /
+                            (lengths[idx + 1] - prev_length)) /
+                 num_pts;
+    }
+
+    spline.push_back((raw_path.get_raw(map_dist)));
+  }
 
   acc = global_max_acceleration, dist = total_distance,
   vels = global_max_velocity, vel0 = global_min_velocity;
@@ -56,6 +85,11 @@ Trajectory2D::Trajectory2D(math::CubicBezier raw_path, float c, float b,
                   : ((dist > 10) ? (initial_factor - 10) : initial_factor - 15);
   internal_max_vel = std::min(vels, factor);
   vel = internal_max_vel;
+
+  // for (math::Vector i : spline) {
+  //   std::cout << i.to_string() << std::endl;
+  //   pros::delay(25);
+  // }
 
   path = generate_path(spline);
 

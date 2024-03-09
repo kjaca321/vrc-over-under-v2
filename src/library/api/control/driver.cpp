@@ -37,18 +37,34 @@ void Driver::straight(float distance) {
 }
 
 void Driver::follow_prim(Trajectory2D trajectory, int direction) {
-  float kv = 1.6, ka = 0.03, kp = .7;
+  float kv = 1.75, ka = 0.01, kp = .0;
+  float w = 2;
+  float time = 0;
+  int lin_dir, ang_dir;
+  if (direction == 1)
+    lin_dir = 1, ang_dir = 1;
+  if (direction == -1)
+    lin_dir = -1, ang_dir = 1;
+  if (direction == 2)
+    lin_dir = 1, ang_dir = -1;
+  if (direction == -2)
+    lin_dir = -1, ang_dir = -1;
+
   for (math::Pose2D pose : trajectory.get()) {
-    float des_lin_vel = pose.linear_vel * direction;
-    float des_ang_vel = pose.angular_vel * direction;
-    float des_acc = pose.linear_acc * direction; 
-    float left_control = des_lin_vel + des_ang_vel * trackwidth / 2;
-    float right_control = des_lin_vel - des_ang_vel * trackwidth / 2;
-    float left_out = kv * left_control + ka * des_acc + kp * (left_control - get_left_vel());
-    float right_out = kv * right_control + ka * des_acc + kp * (right_control - get_right_vel());
+    float des_lin_vel = pose.linear_vel * lin_dir;
+    float des_ang_vel = pose.angular_vel * ang_dir;
+    float des_acc = pose.linear_acc * lin_dir;
+    float left_control = des_lin_vel + w * des_ang_vel * trackwidth / 2;
+    float right_control = des_lin_vel - w * des_ang_vel * trackwidth / 2;
+    float left_out =
+        kv * left_control + ka * des_acc + kp * (left_control - get_left_vel());
+    float right_out = kv * right_control + ka * des_acc +
+                      kp * (right_control - get_right_vel());
     move_left(left_out);
     move_right(right_out);
     pros::delay(10);
+    // std::cout << math::Vector(time, left_control).to_string() <<
+    // std::endl; time += 0.01; pros::delay(25);
   }
 }
 
@@ -65,7 +81,8 @@ void Driver::turn_pt(math::Angle desired_heading) {
                  (std::pow(fabs(err_deg), p) + std::pow(k, p)) +
              i;
   float kd = 400;
-  float prev = 0, min = 15, tol = 0.019, tol2 = .007, timeout = 0, timeout2 = 0, maxtime = 2;
+  float prev = 0, min = 15, tol = 0.019, tol2 = .007, timeout = 0, timeout2 = 0,
+        maxtime = 2;
   float ang, prev_ang = 0;
 
   while (1) {
@@ -98,7 +115,7 @@ void Driver::turn_pt(math::Angle desired_heading) {
     else
       timeout2 = 0;
 
-    if (timeout >= maxtime || timeout2 >= maxtime+8)
+    if (timeout >= maxtime || timeout2 >= maxtime + 8)
       break;
     // if (timeout >= maxtime) break;
 
@@ -149,19 +166,19 @@ void Driver::control() {
 
     // if (fabs(w_out) > w_deadzone)
     //   max_lin = 80;
-    // else 
+    // else
     //   max_lin = 127;
 
     // if (input::Digital::pressing(input::Button::L2)) {
     // float lvel = input::Analog::get_left_y() + input::Analog::get_right_x();
     // float rvel = input::Analog::get_left_y() - input::Analog::get_right_x();
-      // float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
-      // if (ratio > 1) {
-      //   lvel /= ratio;
-      //   rvel /= ratio;
-      // }
-      // move_left(lvel);
-      // move_right(rvel);
+    // float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
+    // if (ratio > 1) {
+    //   lvel /= ratio;
+    //   rvel /= ratio;
+    // }
+    // move_left(lvel);
+    // move_right(rvel);
     // } else {
     float n = input::Analog::get_right_x();
     // float ratio = std::max(std::abs(v_out), std::abs(n)) / 127;
