@@ -38,10 +38,8 @@ void autonomous() {
   // }
 
   robot.follow_prim(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0), -1);
-  // robot.stop();
   robot.move(-127);
   pros::delay(300);
-  // robot.follow_prim(CubicBezier(Vector(2, 15), Vector(30, 20), 8.0), 1);
   robot.stop();
   pros::delay(2);
   kill_auton_sequence();
