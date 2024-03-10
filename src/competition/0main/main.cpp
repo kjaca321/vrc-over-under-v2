@@ -16,8 +16,8 @@ void competition_initialize() {}
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  // auton::run_auton();
-  Trajectory2D::set_constraints(67, 100, 15, 11.0);
+  auton::skills();
+  // Trajectory2D::set_constraints(67, 100, 15, 11.0);
   // Trajectory2D traj(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0));
 
   // CubicBezier raw_path(Vector(20, 20), Vector(20, 20), 6.0);
@@ -36,17 +36,11 @@ void autonomous() {
   //   std::cout << i.to_string() << std::endl;
   //   pros::delay(10);
   // }
-
-  robot.follow_prim(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0), -1);
-  robot.move(-127);
-  pros::delay(300);
-  robot.stop();
-  pros::delay(2);
   kill_auton_sequence();
 }
 
 void opcontrol() {
-  if (auton::selected_auton == auton::num_autons) {
+  if (auton::selected_auton == auton::num_autons || 1) {
     run_auton_sequence();
     pros::lcd::print(3, "running");
     auton::skills_start();

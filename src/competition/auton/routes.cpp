@@ -91,21 +91,98 @@ void skills() {
   robot.follow_prim(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0), -1);
   robot.move(-127);
   pros::delay(400);
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
-  robot.straight(21);
-  robot.stop();
-  robot.turn_pt(Angle(20 + 45, Unit::DEGREES));
+  robot.follow_prim(CubicBezier(Vector(-8, 16), Vector(-8, 16), 13.0), 2);
+  robot.turn_pt(Angle(21 + 45, Unit::DEGREES));
   sys_task::cata_req = 1;
   robot.straight(-8);
   sys_task::left_wing_req = 1;
-  robot.turn_pt(Angle(20 + 45, Unit::DEGREES));
+  robot.turn_pt(Angle(21 + 45, Unit::DEGREES));
   robot.stop();
-  pros::delay(23500);
+  robot.turn_pt(Angle(21 + 45, Unit::DEGREES));
+  robot.stop();
+  // pros::delay(23500);
+  // pros::delay(23000 * 2);
+  pros::delay(300);
   sys_task::cata_req = 0;
   pros::delay(2);
 
   sys_task::left_wing_req = 0;
 
+  robot.straight(17);
+  sys_task::front_wings_req = 1;
+  robot.follow_prim(CubicBezier(Vector(80, 70), Vector(80, 70), 60.0), 1);
+  robot.stop();
+  sys_task::front_wings_req = 0;
+  robot.straight(-2);
+  robot.turn_pt(Angle(36, Unit::DEGREES));
+  robot.stop();
+  robot.straight(-45);
+  robot.stop();
+  robot.turn_pt(Angle(90, Unit::DEGREES));
+  robot.stop();
+  sys_task::front_wings_req = 1;
+  // pros::delay(100);
+  robot.straight(42);
+  robot.stop();
+  sys_task::front_wings_req = 0;
+  robot.straight(10);
+  robot.stop();
+  robot.turn_pt(Angle(44, Unit::DEGREES));
+  robot.stop();
+  pros::delay(250);
+
+  Trajectory2D::set_constraints(55, 100, 15, 11.0);
+  robot.follow_prim(CubicBezier(Vector(5, 90), Vector(-33, 90), 55), 1);
+  robot.move(80);
+  pros::delay(200);
+  robot.stop();
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 40);
+  robot.straight(-16); 
+  robot.stop();
+  // robot.turn_pt(Angle(-40, Unit::DEGREES)); 
+  // robot.move(90);
+  // pros::delay(400);
+  // robot.stop();
+  // robot.straight(-6);
+  robot.stop();
+  robot.turn_pt(Angle(58, Unit::DEGREES));
+  robot.straight(-55);
+  robot.stop();  
+
+  robot.turn_pt(Angle(19, Unit::DEGREES));
+  sys_task::front_wings_req = 1;
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 40);
+  robot.straight(70);
+  robot.stop();
+  sys_task::front_wings_req = 0;
+  pros::delay(200);
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
+  robot.straight(-30);
+  sys_task::wings_req = 1;
+  robot.turn_pt(Angle(135, Unit::DEGREES));
+  robot.straight(-35);
+  robot.turn_pt(Angle(-125, Unit::DEGREES));
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 40);
+  robot.straight(-63);
+  robot.stop();
+  Trajectory2D::set_constraints(67, 100, 15, 11.0);
+  robot.straight(23);
+  sys_task::wings_req = 0;
+  // robot.straight(25);
+  robot.turn_pt(Angle(-12, Unit::DEGREES));
+  sys_task::front_wings_req = 1;
+  robot.straight(60);
+  robot.turn_pt(Angle(100, Unit::DEGREES));
+  robot.stop();
+  robot.straight(55);
+  robot.stop();
+  sys_task::front_wings_req = 0;
+  robot.straight(-10);
+  robot.straight(30);
+  robot.stop();
+  robot.straight(-10);
+  robot.straight(30);
+  robot.stop();
   // sys_task::intake_req = 1;
   // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
   // // robot.set_heading(Angle(-45, Unit::DEGREES));
@@ -165,27 +242,52 @@ void skills() {
 }
 
 void skills_start() {
-  sys_task::intake_req = 1;
+
+  Trajectory2D::set_constraints(67, 100, 15, 11.0);
   Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
-  // robot.set_heading(Angle(-45, Unit::DEGREES));
-  robot.straight(-22.5);
-  robot.turn_pt(Angle(-30, Unit::DEGREES));
-  // robot.stop();
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
-  robot.straight(-37);
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
-  robot.straight(21);
-  robot.stop();
-  robot.turn_pt(Angle(20 + 45, Unit::DEGREES));
-  sys_task::intake_req = 0;
+  robot.follow_prim(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0), -1);
+  robot.move(-127);
+  pros::delay(400);
+  robot.follow_prim(CubicBezier(Vector(-8, 16), Vector(-8, 16), 13.0), 2);
+  robot.turn_pt(Angle(21 + 45, Unit::DEGREES));
   sys_task::cata_req = 1;
   robot.straight(-8);
   sys_task::left_wing_req = 1;
-  robot.turn_pt(Angle(20 + 45, Unit::DEGREES));
+  robot.turn_pt(Angle(21.5 + 45, Unit::DEGREES));
   robot.stop();
-  pros::delay(29000);
+  robot.turn_pt(Angle(21.5 + 45, Unit::DEGREES));
+  robot.stop();
+  pros::delay(23000*2);
+  // pros::delay(60000);
+  // pros::delay(500);
   sys_task::cata_req = 0;
   pros::delay(2);
+
+  sys_task::left_wing_req = 0;
+
+
+  
+  // sys_task::intake_req = 1;
+  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
+  // // robot.set_heading(Angle(-45, Unit::DEGREES));
+  // robot.straight(-22.5);
+  // robot.turn_pt(Angle(-30, Unit::DEGREES));
+  // // robot.stop();
+  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
+  // robot.straight(-37);
+  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
+  // robot.straight(21);
+  // robot.stop();
+  // robot.turn_pt(Angle(20 + 45, Unit::DEGREES));
+  // sys_task::intake_req = 0;
+  // sys_task::cata_req = 1;
+  // robot.straight(-8);
+  // sys_task::left_wing_req = 1;
+  // robot.turn_pt(Angle(20 + 45, Unit::DEGREES));
+  // robot.stop();
+  // pros::delay(29000);
+  // sys_task::cata_req = 0;
+  // pros::delay(2);
 }
 
 void safe_6b() {
