@@ -101,8 +101,8 @@ void skills() {
   robot.turn_pt(Angle(21 + 45, Unit::DEGREES));
   robot.stop();
   // pros::delay(23500);
-  // pros::delay(23000 * 2);
-  pros::delay(300);
+  pros::delay(22000 * 1);
+  // pros::delay(300);
   sys_task::cata_req = 0;
   pros::delay(2);
 
@@ -114,6 +114,7 @@ void skills() {
   robot.stop();
   sys_task::front_wings_req = 0;
   robot.straight(-2);
+  robot.stop();
   robot.turn_pt(Angle(36, Unit::DEGREES));
   robot.stop();
   robot.straight(-45);
@@ -137,7 +138,7 @@ void skills() {
   pros::delay(200);
   robot.stop();
   Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 40);
-  robot.straight(-16); 
+  robot.straight(-21.5); 
   robot.stop();
   // robot.turn_pt(Angle(-40, Unit::DEGREES)); 
   // robot.move(90);
@@ -145,8 +146,8 @@ void skills() {
   // robot.stop();
   // robot.straight(-6);
   robot.stop();
-  robot.turn_pt(Angle(58, Unit::DEGREES));
-  robot.straight(-55);
+  robot.turn_pt(Angle(69, Unit::DEGREES));
+  robot.straight(-56);
   robot.stop();  
 
   robot.turn_pt(Angle(19, Unit::DEGREES));
@@ -155,23 +156,27 @@ void skills() {
   robot.straight(70);
   robot.stop();
   sys_task::front_wings_req = 0;
-  pros::delay(200);
+  pros::delay(400);
   Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
   robot.straight(-30);
   sys_task::wings_req = 1;
+  robot.stop();
   robot.turn_pt(Angle(135, Unit::DEGREES));
-  robot.straight(-35);
-  robot.turn_pt(Angle(-125, Unit::DEGREES));
+  robot.straight(-30);
+  robot.stop();
+  robot.turn_pt(Angle(-115, Unit::DEGREES));
   Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 40);
   robot.straight(-63);
   robot.stop();
   Trajectory2D::set_constraints(67, 100, 15, 11.0);
-  robot.straight(23);
+  robot.straight(30);
   sys_task::wings_req = 0;
   // robot.straight(25);
-  robot.turn_pt(Angle(-12, Unit::DEGREES));
+  robot.stop();
+  robot.turn_pt(Angle(-11, Unit::DEGREES));
   sys_task::front_wings_req = 1;
-  robot.straight(60);
+  robot.straight(65);
+  robot.stop();
   robot.turn_pt(Angle(100, Unit::DEGREES));
   robot.stop();
   robot.straight(55);
@@ -182,6 +187,8 @@ void skills() {
   robot.stop();
   robot.straight(-10);
   robot.straight(30);
+  robot.stop();
+  robot.straight(-18);
   robot.stop();
   // sys_task::intake_req = 1;
   // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
@@ -257,7 +264,7 @@ void skills_start() {
   robot.stop();
   robot.turn_pt(Angle(21.5 + 45, Unit::DEGREES));
   robot.stop();
-  pros::delay(23000*2);
+  pros::delay(22000*1);
   // pros::delay(60000);
   // pros::delay(500);
   sys_task::cata_req = 0;
