@@ -40,7 +40,7 @@ void autonomous() {
 }
 
 void opcontrol() {
-  if (auton::selected_auton == auton::num_autons || 1) {
+  if (auton::selected_auton == auton::num_autons) {
     run_auton_sequence();
     pros::lcd::print(3, "running");
     auton::skills_start();

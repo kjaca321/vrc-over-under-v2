@@ -5,7 +5,7 @@ namespace sys_task {
 void run_systems() {
   while (1) {
     std::uint32_t nw = pros::millis();
-    float pct = .75;
+    float pct = .85;
     cata.set_brake_mode(BrakeType::COAST);
     cata2.set_brake_mode(BrakeType::COAST);
     if (cata_req || master_cata_req) {
