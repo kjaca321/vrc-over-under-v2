@@ -32,24 +32,35 @@ Trajectory2D::Trajectory2D(math::CubicBezier raw_path, float c, float b,
   total_distance = 0;
   std::vector<math::Vector> spline = {};
 
-  float density = 0.02;
+  float density = 0.02; // spacing of points along the curve on (0, 1)
   std::vector<float> lengths = {};
+
+  // for each point on (0 + density, 1)
   for (float t = density; t <= 1; t += density) {
+
+    // retrieve distance between previous and current locations on the curve
     math::Vector prev = raw_path.get_raw(t - density);
     math::Vector curr = raw_path.get_raw(t);
     float d = curr.distance(prev);
+
+    // accumulate distance to a running total and an array of partial sums
     lengths.push_back(total_distance);
     total_distance += d;
   }
 
+  // compute number of points as the reciprocal of the point density
   int num_pts = (int)(1 / density);
 
   float map_dist;
 
+  // iterate through all points on the curve on (0, 1)
   for (float u = 0; u <= 1; u += density) {
-
+    /* compute arc length of the curve at iterator timestamp -> location on
+     * (0,1) multiplied by the total arc length */
     float targ_length = u * lengths[num_pts - 1];
 
+    /* perform a binary search for the closest possible match in the array of
+     * partial distance sums to the desired arc length calculated above */
     int low = 0, high = num_pts, idx = 0;
     while (low < high) {
       idx = low + (((high - low) / 2) | 0);
@@ -64,15 +75,27 @@ Trajectory2D::Trajectory2D(math::CubicBezier raw_path, float c, float b,
       idx--;
     }
 
+    // retrieve partial sum at index found by binary search
     float prev_length = lengths[idx];
+
+    // in the case of an exact match to the target arc length
     if (prev_length == targ_length) {
+      // assign a new t value on (0,1) based on the exact match index
       map_dist = (float)idx / num_pts;
-    } else {
+    }
+
+    // without an exact match
+    else {
+      /* create a fractional index from change in distance from closest match to
+       * target arc length, and assign a new t value on (0,1) based on the
+       * fractional index */
       map_dist = (idx + (targ_length - prev_length) /
                             (lengths[idx + 1] - prev_length)) /
                  num_pts;
     }
 
+    /* append a math::Vector containing the x and y for each updated timestamp
+     * to a new array of Vectors */
     spline.push_back((raw_path.get_raw(map_dist)));
   }
 
@@ -80,40 +103,48 @@ Trajectory2D::Trajectory2D(math::CubicBezier raw_path, float c, float b,
   vels = global_max_velocity, vel0 = global_min_velocity;
 
   float initial_factor = (dist * acc + vel0 * vel0) / (2 * vels) + vels / 2;
+
+  // conditional ladder to limit the velocity based on total target distance
   float factor =
       (dist > 25) ? (initial_factor - 5)
                   : ((dist > 10) ? (initial_factor - 10) : initial_factor - 15);
   internal_max_vel = std::min(vels, factor);
   vel = internal_max_vel;
 
-  // for (math::Vector i : spline) {
-  //   std::cout << i.to_string() << std::endl;
-  //   pros::delay(25);
-  // }
-
   path = generate_path(spline);
 
-  // for (math::Point i : path) {
-  //   std::cout << i.to_string_full() << std::endl;
-  //   pros::delay(20);
-  // }
-
+  // intialize iterators and resulting storage
   float dist_trav = 0;
   float time = 0;
   trajectory = {};
+
+  // iterating through the arc length of the curve
   while (dist_trav <= dist) {
+    /*retrieve the linear velocity and curvature of the path at the current
+     * arc length */
     math::Pose2D kinematics = get_kinematics(dist_trav);
     float lin = kinematics.linear_vel, curv = kinematics.angular_vel;
     float current_acc = kinematics.linear_acc;
+
+    /* convert linear velocity and curvature to left and right wheel velocities
+     * (from the kinematics of a differential drive robot) */
     float lvel = lin * (2 + curv * global_trackwidth) / 2;
     float rvel = lin * (2 - curv * global_trackwidth) / 2;
+
+    /* to prevent saturation of motor velocities, preserve ratio bewtween
+     * left and right sides if max velocity is exceeded */
     float ratio = std::max(std::abs(lvel), std::abs(rvel)) / vels;
     if (ratio > 1) {
       lvel /= ratio;
       rvel /= ratio;
     }
+
+    /* convert left and right wheel velocities to linear and angular velocities
+     * (from the kinematics of a differential drive robot) */
     float final_lin = (lvel + rvel) / 2;
     float final_ang = (lvel - rvel) / global_trackwidth;
+
+    // update resulting trajectory and arc length / time iterators
     trajectory.push_back(math::Pose2D(kinematics.x, kinematics.y,
                                       kinematics.heading, final_lin,
                                       current_acc, final_ang));
@@ -312,17 +343,27 @@ Trajectory2D::generate_path(std::vector<math::Vector> spline) {
 
 math::Angle Trajectory2D::get_heading_at_pt(std::vector<math::Vector> spline,
                                             int idx) {
+  // recursive edge case: heading at first point is set to heading at second
   if (idx == 0)
     return get_heading_at_pt(spline, idx + 1);
+
+  // retrieve discrete derivative of the curve at the desired point from slope
   float run = spline[idx].x - spline[idx - 1].x;
   float rise = spline[idx].y - spline[idx - 1].y;
+
+  // angle wrapping: declare conditions for creating absolute heading
   bool up = spline[idx - 1].y < spline[idx].y;
   bool right = spline[idx - 1].x < spline[idx].x;
+
   math::Angle relative;
+
+  // determine reference angle heading with the arctan function
   if (rise == 0)
     relative = math::Angle(M_PI_2, math::Unit::RADIANS);
   else
     relative = math::Angle(atan(run / rise), math::Unit::RADIANS);
+
+  // wrap angle to absolute based on direction of curve
   if (spline[idx - 1].y == spline[idx].y) {
     if (!right)
       return math::Angle((M_PI - std::abs(relative.get())) *
@@ -340,19 +381,30 @@ math::Angle Trajectory2D::get_heading_at_pt(std::vector<math::Vector> spline,
 
 math::Vector
 Trajectory2D::get_profiled_linear_kinematics(float distance_travelled) {
+  /* kinematic equations for timestamps of acceleration change derived from the
+   * constant-acceleration formulas */
   float t1 = (vel - vel0) / acc;
   float t2 = dist / vel - vel0 / acc + (vel0 * vel0) / (acc * vel);
   float tf =
       dist / vel + vel / acc - 2 * vel0 / acc + (vel0 * vel0) / (acc * vel);
+
+  /* discrete integrals of velocity at timestamps t1 and t2 (accumulated
+   * distance/arc length) */
   float d1 = acc / 2 * t1 * t1 + vel0 * t1;
   float d2 = d1 + vel * t2 - vel * t1;
-  if (distance_travelled < d1)
+
+  /* based on current distance travelled, return desired linear acceleration and
+   * velocity derived from the kinematic timestamp equations */
+
+  if (distance_travelled < d1) // first segment (positive acceleration)
     return math::Vector(
         (vel0 + std::sqrt(vel0 * vel0 + 8 * distance_travelled * acc)) / 2,
         acc);
-  if (distance_travelled < d2)
+
+  if (distance_travelled < d2) // second segment (constant velocity)
     return math::Vector(vel, 0);
-  else
+
+  else // third segment (negative acceleration)
     return math::Vector(
         (vel + acc * t2 - acc * tf +
          std::sqrt(acc * acc * t2 * t2 + acc * acc * tf * tf + vel * vel -

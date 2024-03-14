@@ -26,6 +26,9 @@ CubicBezier::CubicBezier(Vector _guide, Vector end, float _lead) {
 }
 
 Vector CubicBezier::get_raw(float t) {
+  /* parametric equations for a cubic bezier curve, returns an (x,y) position
+   * vector from a time t on (0,1), based on a target point, guiding point, and
+   * leading distance */
   float x = 3 * t * t * (1 - t) * guide.x + t * t * t * target.x;
   float y = 3 * t * (1 - t) * (1 - t) * lead + 3 * t * t * (1 - t) * guide.y +
             t * t * t * target.y;

@@ -37,10 +37,13 @@ void Driver::straight(float distance) {
 }
 
 void Driver::follow_prim(Trajectory2D trajectory, int direction) {
+  // tuning factors for path following
   float kv = 1.75, ka = 0.01, kp = .0;
   float w = 2;
   float time = 0;
   int lin_dir, ang_dir;
+
+  // direction argument preferences for modifying paths on the fly
   if (direction == 1)
     lin_dir = 1, ang_dir = 1;
   if (direction == -1)
@@ -50,21 +53,33 @@ void Driver::follow_prim(Trajectory2D trajectory, int direction) {
   if (direction == -2)
     lin_dir = -1, ang_dir = -1;
 
+  /* iterating through the trajectory of robot poses (position, linear velocity,
+   * heading, angular velocity, acceleration) */
   for (math::Pose2D pose : trajectory.get()) {
+
+    // retrieve desired velocities and acceleration from current pose
     float des_lin_vel = pose.linear_vel * lin_dir;
     float des_ang_vel = pose.angular_vel * ang_dir;
     float des_acc = pose.linear_acc * lin_dir;
+
+    /* convert linear and angular velocities to final left and right wheel
+     * velocities, from the differential drive kinematics, where 'w' is the
+     * responsiveness to desired change in heading and angular velocity */
     float left_control = des_lin_vel + w * des_ang_vel * trackwidth / 2;
     float right_control = des_lin_vel - w * des_ang_vel * trackwidth / 2;
+
+    /* apply tuning factors to left and right control outputs, scaled based on a
+     * gaussian distribution curve, where 'kv' is the feedforward velocity
+     * factor, 'ka' is the feedforward acceleration factor, and 'kp' is the
+     * feedback factor */
     float left_out =
         kv * left_control + ka * des_acc + kp * (left_control - get_left_vel());
     float right_out = kv * right_control + ka * des_acc +
                       kp * (right_control - get_right_vel());
+
     move_left(left_out);
     move_right(right_out);
     pros::delay(10);
-    // std::cout << math::Vector(time, left_control).to_string() <<
-    // std::endl; time += 0.01; pros::delay(25);
   }
 }
 
