@@ -9,11 +9,12 @@
 #pragma once
 #include "../../util.hpp"
 #include "../math/angle.hpp"
+#include "../math/cubic-bezier.hpp"
 #include "../math/math.hpp"
 #include "../math/point.hpp"
 #include "../math/pose2d.hpp"
 #include "../math/vector.hpp"
-#include "../math/cubic-bezier.hpp"
+
 
 namespace lib::control {
 
@@ -21,9 +22,8 @@ class Trajectory2D {
 public:
   Trajectory2D(math::CubicBezier raw_path, float c = 2, float b = 0.82,
                float k = 7);
-  Trajectory2D(math::CubicBezier raw_path,
-               std::vector<math::Vector> speeds, float c = 2, float b = 0.82,
-               float k = 7);
+  Trajectory2D(math::CubicBezier raw_path, std::vector<math::Vector> speeds,
+               float c = 2, float b = 0.82, float k = 7);
   static void set_constraints(float in_vel, float in_accel, float in_min_vel);
   static void set_constraints(float in_vel, float in_accel, float in_min_vel,
                               float in_trackw);

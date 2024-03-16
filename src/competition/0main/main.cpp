@@ -16,7 +16,7 @@ void competition_initialize() {}
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  auton::skills();
+  auton::rush_6b();
   // Trajectory2D::set_constraints(67, 100, 15, 11.0);
   // Trajectory2D traj(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0));
 

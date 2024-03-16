@@ -77,6 +77,7 @@ public:
    * Full stopping motion used at the end of autonmous motions.
    */
   void stop(void);
+  void stop_fast(void);
 
 protected:
   std::vector<pros::Motor *> left_motors;

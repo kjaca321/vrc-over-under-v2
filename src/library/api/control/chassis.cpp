@@ -78,4 +78,13 @@ void Chassis::stop() {
   pros::delay(1);
 }
 
+void Chassis::stop_fast() {
+  move(0);
+  set_brake(utility::BrakeType::BRAKE);
+  brake();
+  pros::delay(100);
+  set_brake(utility::BrakeType::COAST);
+  pros::delay(1);
+}
+
 }; // namespace lib::control

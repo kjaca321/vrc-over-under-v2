@@ -9,6 +9,7 @@ extern pros::ADIDigitalIn auton_calibrate;
 
 namespace auton {
 
+void rush_6b(void);
 void safe_6b(void);
 void safe_4b(void);
 void safe_3b_touch(void);
@@ -31,7 +32,8 @@ void run_systems(void);
 void run_input(void);
 
 extern bool cata_req, front_wings_req, wings_req, hang_req, left_wing_req,
-    right_wing_req, intake_req, intake_rev_req, accel_off, master_cata_req, master_left_wing_req;
+    right_wing_req, intake_req, intake_rev_req, accel_off, master_cata_req,
+    master_left_wing_req;
 extern float intake_speed;
 
 }; // namespace sys_task

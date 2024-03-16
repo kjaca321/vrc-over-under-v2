@@ -36,6 +36,26 @@ void Driver::straight(float distance) {
   }
 }
 
+void Driver::straight(void (*sub)(void), float distance) {
+  float dir = math::Math::sgn(distance);
+  distance = std::abs(distance);
+  Trajectory1D path(distance);
+  float kv = 1.3, ka = 0.03, kp = .7;
+  pros::Task inside = pros::Task(sub);
+  for (math::Pose1D pose : path.get()) {
+    float des_dist = pose.pos;
+    float des_vel = pose.vel;
+    float des_acc = pose.acc;
+    float out = kv * des_vel + ka * des_acc +
+                kp * (des_vel - (get_left_vel() + get_right_vel()) / 2);
+    move(dir * out);
+    pros::delay(10);
+  }
+
+  if (inside.get_state() == pros::E_TASK_STATE_RUNNING)
+    inside.remove();
+}
+
 void Driver::follow_prim(Trajectory2D trajectory, int direction) {
   // tuning factors for path following
   float kv = 1.75, ka = 0.01, kp = .0;
@@ -81,6 +101,60 @@ void Driver::follow_prim(Trajectory2D trajectory, int direction) {
     move_right(right_out);
     pros::delay(10);
   }
+}
+
+void Driver::follow_prim(void (*sub)(void), Trajectory2D trajectory,
+                         int direction) {
+  // tuning factors for path following
+  float kv = 1.75, ka = 0.01, kp = .0;
+  float w = 2;
+  float time = 0;
+  int lin_dir, ang_dir;
+
+  // direction argument preferences for modifying paths on the fly
+  if (direction == 1)
+    lin_dir = 1, ang_dir = 1;
+  if (direction == -1)
+    lin_dir = -1, ang_dir = 1;
+  if (direction == 2)
+    lin_dir = 1, ang_dir = -1;
+  if (direction == -2)
+    lin_dir = -1, ang_dir = -1;
+
+  /* iterating through the trajectory of robot poses (position, linear velocity,
+   * heading, angular velocity, acceleration) */
+
+  pros::Task inside = pros::Task(sub);
+
+  for (math::Pose2D pose : trajectory.get()) {
+
+    // retrieve desired velocities and acceleration from current pose
+    float des_lin_vel = pose.linear_vel * lin_dir;
+    float des_ang_vel = pose.angular_vel * ang_dir;
+    float des_acc = pose.linear_acc * lin_dir;
+
+    /* convert linear and angular velocities to final left and right wheel
+     * velocities, from the differential drive kinematics, where 'w' is the
+     * responsiveness to desired change in heading and angular velocity */
+    float left_control = des_lin_vel + w * des_ang_vel * trackwidth / 2;
+    float right_control = des_lin_vel - w * des_ang_vel * trackwidth / 2;
+
+    /* apply tuning factors to left and right control outputs, scaled based on a
+     * gaussian distribution curve, where 'kv' is the feedforward velocity
+     * factor, 'ka' is the feedforward acceleration factor, and 'kp' is the
+     * feedback factor */
+    float left_out =
+        kv * left_control + ka * des_acc + kp * (left_control - get_left_vel());
+    float right_out = kv * right_control + ka * des_acc +
+                      kp * (right_control - get_right_vel());
+
+    move_left(left_out);
+    move_right(right_out);
+    pros::delay(10);
+  }
+
+  if (inside.get_state() == pros::E_TASK_STATE_RUNNING)
+    inside.remove();
 }
 
 void Driver::turn_pt(math::Angle desired_heading) {
@@ -132,7 +206,70 @@ void Driver::turn_pt(math::Angle desired_heading) {
 
     if (timeout >= maxtime || timeout2 >= maxtime + 8)
       break;
-    // if (timeout >= maxtime) break;
+
+    pros::delay(10);
+  }
+}
+
+void Driver::turn_swing(math::Angle desired_heading, int direction) {
+  float targ = desired_heading.radians().get();
+  float curr = get_heading().get();
+  math::Angle raw_ang_dist =
+      math::Angle(math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
+
+  float err = raw_ang_dist.get();
+  float err_deg = raw_ang_dist.degrees().get();
+  float i = 716, f = 60, p = 0.92, k = 2.3;
+  float kp = ((f - i) * std::pow(fabs(err_deg), p)) /
+                 (std::pow(fabs(err_deg), p) + std::pow(k, p)) +
+             i;
+  float kd = 400;
+  float prev = 0, min = 15, tol = 0.019, tol2 = .007, timeout = 0, timeout2 = 0,
+        maxtime = 2;
+  float ang, prev_ang = 0;
+
+  while (1) {
+    targ = desired_heading.radians().get();
+    curr = get_heading().get();
+    math::Angle raw_ang_dist = math::Angle(
+        math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
+
+    err = raw_ang_dist.get();
+    float der = (err - prev);
+    prev = err;
+
+    float out = kp * err + kd * der;
+    if (fabs(out) < min)
+      out = math::Math::sgn(out) * min;
+
+    if (direction > 0) {
+      move_left(fabs(out) * math::Math::sgn(err));
+      move_right(0);
+      set_left_brake(utility::BrakeType::COAST);
+      set_right_brake(utility::BrakeType::BRAKE);
+    } else {
+      move_left(0);
+      move_right(-fabs(out) * math::Math::sgn(err));
+      set_left_brake(utility::BrakeType::BRAKE);
+      set_right_brake(utility::BrakeType::COAST);
+    }
+
+    ang = curr;
+    float del_ang = ang - prev_ang;
+    prev_ang = ang;
+
+    if (fabs(err) < tol)
+      timeout++;
+    else
+      timeout = 0;
+
+    if (fabs(del_ang) < tol2)
+      timeout2++;
+    else
+      timeout2 = 0;
+
+    if (timeout >= maxtime || timeout2 >= maxtime + 8)
+      break;
 
     pros::delay(10);
   }
