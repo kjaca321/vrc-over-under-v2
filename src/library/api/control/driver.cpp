@@ -316,12 +316,9 @@ void Driver::control() {
       wt_prev = wt;
     }
 
-    // if (fabs(w_out) > w_deadzone)
-    //   max_lin = 80;
-    // else
-    //   max_lin = 127;
 
-    // if (input::Digital::pressing(input::Button::L2)) {
+
+    // if (input::Button::down_pressed) {
     // float lvel = input::Analog::get_left_y() + input::Analog::get_right_x();
     // float rvel = input::Analog::get_left_y() - input::Analog::get_right_x();
     // float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
@@ -329,15 +326,10 @@ void Driver::control() {
     //   lvel /= ratio;
     //   rvel /= ratio;
     // }
-    // move_left(lvel);
-    // move_right(rvel);
+    // move_left(.6*lvel);
+    // move_right(.6*rvel);
     // } else {
     float n = input::Analog::get_right_x();
-    // float ratio = std::max(std::abs(v_out), std::abs(n)) / 127;
-    // if (ratio > 1) {
-    //   v_out /= ratio;
-    //   n /= ratio;
-    // }
     float lvel = v_out + n;
     float rvel = v_out - n;
     float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
@@ -345,12 +337,13 @@ void Driver::control() {
       lvel /= ratio;
       rvel /= ratio;
     }
+
     move_left(lvel);
     move_right(rvel);
-    // }
-
+  // }
+  
     pros::Task::delay_until(&nw, 1000 * dt);
-  }
+}
 }
 
 void Driver::set_accel_time(float a) { accel_time = a; }

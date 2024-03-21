@@ -82,8 +82,9 @@ void Chassis::stop_fast() {
   move(0);
   set_brake(utility::BrakeType::BRAKE);
   brake();
-  pros::delay(100);
+  pros::delay(20);
   set_brake(utility::BrakeType::COAST);
+  move(0);
   pros::delay(1);
 }
 

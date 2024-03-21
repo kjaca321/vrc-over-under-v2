@@ -5,7 +5,7 @@ namespace sys_task {
 void run_systems() {
   while (1) {
     std::uint32_t nw = pros::millis();
-    float pct = .82;
+    float pct = .85;
     cata.set_brake_mode(BrakeType::COAST);
     cata2.set_brake_mode(BrakeType::COAST);
     if (cata_req || master_cata_req) {
@@ -31,6 +31,11 @@ void run_systems() {
       intake.brake();
       intake2.brake();
     }
+
+    if (Button::down_pressed) {
+      robot.set_brake(BrakeType::HOLD);
+    }
+    else robot.set_brake(BrakeType::COAST);
 
     front_wings.set(front_wings_req);
     hang1.set(hang_req);
