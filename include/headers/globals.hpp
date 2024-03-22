@@ -16,6 +16,7 @@ void safe_3b_touch(void);
 void safe_close(void);
 void rush_close(void);
 void rush_close_push(void);
+void rush_close_wp(void);
 void skills(void);
 void skills_start(void);
 void run_selection(void);
