@@ -21,25 +21,34 @@ void run_selection() {
     std::string auton_str;
     switch (selected_auton) {
     case 0:
-      auton_str = "none          ";
+      auton_str = "none            ";
       break;
     case 1:
-      auton_str = "safe 6b       ";
+      auton_str = "safe 6b         ";
       break;
     case 2:
-      auton_str = "safe 4b       ";
+      auton_str = "safe 4b touch   ";
       break;
     case 3:
-      auton_str = "safe 3b touch ";
+      auton_str = "safe 3b touch   ";
       break;
     case 4:
-      auton_str = "safe close    ";
-      break;
+      auton_str = "rush 6b         ";
+      break;      
     case 5:
-      auton_str = "rush close    ";
+      auton_str = "safe close      ";
       break;
     case 6:
-      auton_str = "skills        ";
+      auton_str = "rush close wp   ";
+      break;
+    case 7:
+      auton_str = "rush close      ";
+      break;
+    case 8:
+      auton_str = "rush close push ";
+      break;
+    case 9:
+      auton_str = "skills          ";
       break;
     }
     master.print(0, 0, "%s", auton_str);
@@ -66,18 +75,27 @@ void run_auton() {
     auton::safe_3b_touch();
     break;
   case 4:
+    auton::rush_6b();
+    break;    
+  case 5:
     auton::safe_close();
     break;
-  case 5:
+  case 6:
+    auton::rush_close_wp();
+    break;
+  case 7:
     auton::rush_close();
     break;
-  case 6:
+  case 8:
+    auton::rush_close_push();
+    break;
+  case 9:
     auton::skills();
     break;
   }
 }
 
 uint32_t max_time = 14998;
-unsigned int selected_auton = 0, num_autons = 6;
+unsigned int selected_auton = 0, num_autons = 9;
 
 }; // namespace auton

@@ -53,7 +53,7 @@ void PositionTracker::run_tracker() {
     std::uint32_t nw = pros::millis();
 
     math::Angle curr_heading =
-        math::Angle(imu->get_yaw(), math::Unit::DEGREES).radians();
+        math::Angle(fmod((imu->get_heading()+180.0),360.0) - 180.0, math::Unit::DEGREES).radians();
     math::Angle delta = math::Angle(curr_heading.get() - prev_heading_i.get(),
                                     math::Unit::RADIANS);
 

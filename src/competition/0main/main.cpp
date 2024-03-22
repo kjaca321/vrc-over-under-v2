@@ -3,8 +3,8 @@
 void initialize() {
   robot.set_controller_tuning("arcade", 1, "exponential", 0.02, 10, 0.95);
   pros::lcd::initialize();
-  // auton::run_selection();
-  robot.setup();
+  auton::run_selection();
+  // robot.setup();
   master.rumble("-");
   pros::lcd::print(2, "READY");
 }
@@ -16,7 +16,7 @@ void competition_initialize() {}
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  auton::skills();
+  auton::run_auton();
   // Trajectory2D::set_constraints(67, 100, 15, 11.0);
   // Trajectory2D traj(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0));
 
