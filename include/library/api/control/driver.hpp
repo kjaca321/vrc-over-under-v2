@@ -42,7 +42,7 @@ public:
 
   void follow_prim(Trajectory2D, int direction);
   void follow_prim(void (*sub)(void), Trajectory2D, int direction);
-  void follow_feed(Trajectory2D trajectory);
+  void follow_feed(Trajectory2D trajectory, int direction);
   void straight(float distance);
   void straight(void (*sub)(void), float distance);
   void turn_pt(math::Angle desired_heading);

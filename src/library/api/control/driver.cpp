@@ -56,6 +56,73 @@ void Driver::straight(void (*sub)(void), float distance) {
     inside.remove();
 }
 
+void Driver::follow_feed(Trajectory2D trajectory, int direction) {
+  float n = 2;
+  int lin_dir, ang_dir;
+
+  // direction argument preferences for modifying paths on the fly
+  if (direction == 1)
+    lin_dir = 1, ang_dir = 1;
+  if (direction == -1)
+    lin_dir = -1, ang_dir = 1;
+  if (direction == 2)
+    lin_dir = 1, ang_dir = -1;
+  if (direction == -2)
+    lin_dir = -1, ang_dir = -1;
+
+  set_relative_position(math::Vector(0, 0));
+  set_relative_heading(math::Angle(0, math::Unit::RADIANS));
+
+  for (math::Pose2D pose : trajectory.get()) {
+    float des_lin_vel = pose.linear_vel * lin_dir;
+    float des_ang_vel = pose.angular_vel * ang_dir;
+    float des_acc = pose.linear_acc * lin_dir;
+    float des_x = pose.x, des_y = pose.y;
+
+    float b = 2, zeta = 0.5;
+
+    float kv = 1.75, ka = 0.0, kp = .0;
+    float w = 2;
+
+    math::Angle des_heading = pose.heading;
+    math::Vector curr_pos = get_relative_position();
+    math::Angle curr_heading = get_relative_heading();
+
+    float err_x = des_x - curr_pos.x, err_y = des_y - curr_pos.y;
+    math::Angle err_heading = des_heading - curr_heading;
+
+    float err_x_local =
+        cos(curr_heading.get()) * err_x + sin(curr_heading.get()) * err_y;
+    float err_y_local =
+        cos(curr_heading.get()) * err_y - sin(curr_heading.get()) * err_x;
+
+    float gain =
+        2 * zeta *
+        sqrt(des_ang_vel * des_ang_vel + b * des_lin_vel * des_lin_vel);
+
+    float vel = des_lin_vel * cos(err_heading.get()) + gain * err_x_local;
+    float omega = des_ang_vel + gain * err_heading.get() +
+                  b * des_lin_vel * sin(err_heading.get()) * err_y_local /
+                      err_heading.get();
+
+    float left_control = vel + omega * trackwidth / 2;
+    float right_control = vel - omega * trackwidth / 2;
+
+    /* apply tuning factors to left and right control outputs, scaled based on a
+     * gaussian distribution curve, where 'kv' is the feedforward velocity
+     * factor, 'ka' is the feedforward acceleration factor, and 'kp' is the
+     * feedback factor */
+    float left_out =
+        kv * left_control + ka * des_acc + kp * (left_control - get_left_vel());
+    float right_out = kv * right_control + ka * des_acc +
+                      kp * (right_control - get_right_vel());
+
+    move_left(left_out);
+    move_right(right_out);
+    pros::delay(10);
+  }
+}
+
 void Driver::follow_prim(Trajectory2D trajectory, int direction) {
   // tuning factors for path following
   float kv = 1.75, ka = 0.01, kp = .0;
@@ -316,8 +383,6 @@ void Driver::control() {
       wt_prev = wt;
     }
 
-
-
     // if (input::Button::down_pressed) {
     // float lvel = input::Analog::get_left_y() + input::Analog::get_right_x();
     // float rvel = input::Analog::get_left_y() - input::Analog::get_right_x();
@@ -340,10 +405,10 @@ void Driver::control() {
 
     move_left(lvel);
     move_right(rvel);
-  // }
-  
+    // }
+
     pros::Task::delay_until(&nw, 1000 * dt);
-}
+  }
 }
 
 void Driver::set_accel_time(float a) { accel_time = a; }

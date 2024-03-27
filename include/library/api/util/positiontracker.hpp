@@ -65,12 +65,14 @@ public:
    * @param a : new angle of IMU
    */
   void set_heading(math::Angle a);
+  void set_relative_heading(math::Angle a);
 
   /**
    * Retrieves the Angle of the IMU sensor in radians.
    * @return Angle of the IMU
    */
   math::Angle get_heading(void);
+  math::Angle get_relative_heading(void);
 
   /**
    * Retrieves the relative linear position of the robot.
@@ -139,6 +141,7 @@ private:
   float prev_right_vel;
   float relative_distance;
   math::Angle heading;
+  math::Angle relative_heading;
   math::Angle prev_heading_i;
   math::Vector position;
   math::Vector relative_position;

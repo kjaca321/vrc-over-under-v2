@@ -53,7 +53,9 @@ void PositionTracker::run_tracker() {
     std::uint32_t nw = pros::millis();
 
     math::Angle curr_heading =
-        math::Angle(fmod((imu->get_heading()+180.0),360.0) - 180.0, math::Unit::DEGREES).radians();
+        math::Angle(fmod((imu->get_heading() + 180.0), 360.0) - 180.0,
+                    math::Unit::DEGREES)
+            .radians();
     math::Angle delta = math::Angle(curr_heading.get() - prev_heading_i.get(),
                                     math::Unit::RADIANS);
 
@@ -102,8 +104,11 @@ void PositionTracker::run_tracker() {
     position.x += d_pos_local * sin(avg);
     position.y += d_pos_local * cos(avg);
 
-    relative_position.y += speed * cos(heading.get());
-    relative_position.x += speed * sin(heading.get());
+    relative_position.x += d_pos_local * sin(avg);
+    relative_position.y += d_pos_local * cos(avg);
+
+    // relative_position.y += speed * cos(heading.get());
+    // relative_position.x += speed * sin(heading.get());
 
     relative_distance += speed;
 
@@ -124,6 +129,12 @@ math::Vector PositionTracker::get_position() { return position; }
 void PositionTracker::set_heading(math::Angle a) { heading = a; }
 
 math::Angle PositionTracker::get_heading() { return heading; }
+
+void PositionTracker::set_relative_heading(math::Angle a) {
+  relative_heading = a;
+}
+
+math::Angle PositionTracker::get_relative_heading() { return relative_heading; }
 
 float PositionTracker::get_relative_displacement() { return relative_distance; }
 
