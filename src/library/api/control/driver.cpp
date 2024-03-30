@@ -81,8 +81,8 @@ void Driver::follow_feed(Trajectory2D trajectory, int direction) {
 
     float b = 2, zeta = 0.5;
 
-    float kv = 1.75, ka = 0.0, kp = .0;
-    float w = 2;
+    float kv = 1.5, ka = 0.0, kp = .0;
+    float w = 2.5;
 
     math::Angle des_heading = pose.heading;
     math::Vector curr_pos = get_relative_position();
@@ -105,8 +105,8 @@ void Driver::follow_feed(Trajectory2D trajectory, int direction) {
                   b * des_lin_vel * sin(err_heading.get()) * err_y_local /
                       err_heading.get();
 
-    float left_control = vel + omega * trackwidth / 2;
-    float right_control = vel - omega * trackwidth / 2;
+    float left_control = vel + w* omega * trackwidth / 2;
+    float right_control = vel - w* omega * trackwidth / 2;
 
     /* apply tuning factors to left and right control outputs, scaled based on a
      * gaussian distribution curve, where 'kv' is the feedforward velocity
@@ -125,8 +125,8 @@ void Driver::follow_feed(Trajectory2D trajectory, int direction) {
 
 void Driver::follow_prim(Trajectory2D trajectory, int direction) {
   // tuning factors for path following
-  float kv = 1.75, ka = 0.01, kp = .0;
-  float w = 2;
+  float kv = 1.7, ka = 0.1, kp = .25;
+  float w = 2.;
   float time = 0;
   int lin_dir, ang_dir;
 

@@ -3,7 +3,7 @@
 void initialize() {
   robot.set_controller_tuning("arcade", 1, "exponential", 0.02, 10, 0.95);
   pros::lcd::initialize();
-  auton::run_selection();
+  // auton::run_selection();
   // robot.setup();
   master.rumble("-");
   pros::lcd::print(2, "READY");
@@ -16,10 +16,13 @@ void competition_initialize() {}
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  auton::run_auton();
-  // Trajectory2D::set_constraints(67, 100, 15, 11.0);
+  auton::safe_6b();
+  Trajectory2D::set_constraints(70, 130, 15, 11.0);
   // Trajectory2D traj(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0));
-
+  robot.set_brake(BrakeType::BRAKE);
+  robot.follow_prim(CubicBezier(Vector(30, 30), Vector(30, 30), 15.0), 1);
+  robot.brake();
+  pros::delay(100000);
   // CubicBezier raw_path(Vector(20, 20), Vector(20, 20), 6.0);
   // std::vector<math::Vector> spline = {};
 
