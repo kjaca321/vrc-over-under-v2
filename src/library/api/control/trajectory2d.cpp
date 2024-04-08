@@ -126,6 +126,12 @@ Trajectory2D::Trajectory2D(math::CubicBezier raw_path, float c, float b,
     float lin = kinematics.linear_vel, curv = kinematics.angular_vel;
     float current_acc = kinematics.linear_acc;
 
+    float c1 = raw_path.get_curvature(dist_trav / dist);
+    // if (c1 < 0.000001)
+    // curv = math::Math::sgn(curv) * c1;
+    // else
+    //   curv = math::Math::sgn(curv) * c1;
+
     /* convert linear velocity and curvature to left and right wheel velocities
      * (from the kinematics of a differential drive robot) */
     float lvel = lin * (2 + curv * global_trackwidth) / 2;
@@ -148,6 +154,7 @@ Trajectory2D::Trajectory2D(math::CubicBezier raw_path, float c, float b,
     trajectory.push_back(math::Pose2D(kinematics.x, kinematics.y,
                                       kinematics.heading, final_lin,
                                       current_acc, final_ang));
+
     dist_trav += final_lin * dt;
     time += dt;
   }

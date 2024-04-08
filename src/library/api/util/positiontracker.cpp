@@ -112,7 +112,7 @@ void PositionTracker::run_tracker() {
 
     relative_distance += speed;
 
-    // pros::lcd::print(0, "heading: %f", heading.degrees().get());
+    // pros::lcd::print(0, "%s", relative_position.to_string());
     // pros::lcd::print(1, "currheading: %f", curr_heading.degrees().get());
 
     pros::Task::delay_until(&nw, odom_dt * 1000);

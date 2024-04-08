@@ -118,6 +118,9 @@ private:
   float left_velocity;
   float right_velocity;
   float driver_max_velocity;
+  static inline float args[] = {3.96476,       6.8259,         -0.945961,
+                                0.076107,      -0.00311266,    0.0000674742,
+                                -0.0000007372, 0.0000000031934};
 };
 
 /**

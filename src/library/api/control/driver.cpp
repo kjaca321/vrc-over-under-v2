@@ -24,12 +24,18 @@ void Driver::straight(float distance) {
   float dir = math::Math::sgn(distance);
   distance = std::abs(distance);
   Trajectory1D path(distance);
-  float kv = 1.3, ka = 0.03, kp = .7;
+  float kv = 1.3, ka = 0.02, kp = .7;
   for (math::Pose1D pose : path.get()) {
     float des_dist = pose.pos;
     float des_vel = pose.vel;
     float des_acc = pose.acc;
-    float out = kv * des_vel + ka * des_acc +
+
+    float ff = 0;
+    for (int n = 0; n <= 7; n++) {
+      ff += args[n] * pow(des_vel, n);
+    }
+
+    float out = ff + ka * des_acc +
                 kp * (des_vel - (get_left_vel() + get_right_vel()) / 2);
     move(dir * out);
     pros::delay(10);
@@ -79,10 +85,10 @@ void Driver::follow_feed(Trajectory2D trajectory, int direction) {
     float des_acc = pose.linear_acc * lin_dir;
     float des_x = pose.x, des_y = pose.y;
 
-    float b = 2, zeta = 0.5;
+    float b = 1, zeta = 0.;
 
     float kv = 1.5, ka = 0.0, kp = .0;
-    float w = 2.5;
+    float w = 1;
 
     math::Angle des_heading = pose.heading;
     math::Vector curr_pos = get_relative_position();
@@ -105,17 +111,15 @@ void Driver::follow_feed(Trajectory2D trajectory, int direction) {
                   b * des_lin_vel * sin(err_heading.get()) * err_y_local /
                       err_heading.get();
 
-    float left_control = vel + w* omega * trackwidth / 2;
-    float right_control = vel - w* omega * trackwidth / 2;
+    float left_control = vel + w * omega * trackwidth / 2;
+    float right_control = vel - w * omega * trackwidth / 2;
 
     /* apply tuning factors to left and right control outputs, scaled based on a
      * gaussian distribution curve, where 'kv' is the feedforward velocity
      * factor, 'ka' is the feedforward acceleration factor, and 'kp' is the
      * feedback factor */
-    float left_out =
-        kv * left_control + ka * des_acc + kp * (left_control - get_left_vel());
-    float right_out = kv * right_control + ka * des_acc +
-                      kp * (right_control - get_right_vel());
+    float left_out = kv * left_control;
+    float right_out = kv * right_control;
 
     move_left(left_out);
     move_right(right_out);
@@ -125,8 +129,8 @@ void Driver::follow_feed(Trajectory2D trajectory, int direction) {
 
 void Driver::follow_prim(Trajectory2D trajectory, int direction) {
   // tuning factors for path following
-  float kv = 1.7, ka = 0.1, kp = .25;
-  float w = 2.;
+  float kv = 1.7, ka = 0.05, kp = .7;
+  float w = 2.5;
   float time = 0;
   int lin_dir, ang_dir;
 
@@ -159,10 +163,17 @@ void Driver::follow_prim(Trajectory2D trajectory, int direction) {
      * gaussian distribution curve, where 'kv' is the feedforward velocity
      * factor, 'ka' is the feedforward acceleration factor, and 'kp' is the
      * feedback factor */
+
+    float left_ff = 0, right_ff = 0;
+    for (int n = 0; n <= 7; n++) {
+      left_ff += args[n] * pow(left_control, n);
+      right_ff += args[n] * pow(right_control, n);
+    }
+
     float left_out =
-        kv * left_control + ka * des_acc + kp * (left_control - get_left_vel());
-    float right_out = kv * right_control + ka * des_acc +
-                      kp * (right_control - get_right_vel());
+        left_ff + ka * des_acc + kp * (left_control - get_left_vel());
+    float right_out =
+        right_ff + ka * des_acc + kp * (right_control - get_right_vel());
 
     move_left(left_out);
     move_right(right_out);

@@ -35,6 +35,17 @@ Vector CubicBezier::get_raw(float t) {
   return Vector(x, y);
 }
 
+float CubicBezier::get_curvature(float t) {
+  float x1 = 3 * t * (t * target.x + (2 - 3 * t) * guide.x);
+  float y1 = 3 * (t * t * target.y + (2 - 3 * t) * t * guide.y +
+                  lead * (3 * t * t - 4 * t + 1));
+  float x2 = 6 * (t * target.x + (1 - 3 * t) * guide.x);
+  float y2 = 6 * (t * target.y + (1 - 3 * t) * guide.y + lead * (3 * t - 2));
+  float cross = fabs((x1 * y2) - (y1 * x2));
+  float cube = pow(sqrt(x1 * x1 + y1 * y1), 3);
+  return cross / cube;
+}
+
 Vector CubicBezier::get(float length) {
   float t = length / arc_length;
   return get_raw(t);

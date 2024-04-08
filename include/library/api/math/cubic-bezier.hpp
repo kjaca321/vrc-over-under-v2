@@ -22,6 +22,7 @@ public:
   Vector guide;
   Vector get(float length);
   Vector get_raw(float t);
+  float get_curvature(float t);
 };
 
 } // namespace lib::math
