@@ -243,16 +243,29 @@ void Driver::turn_pt(math::Angle desired_heading) {
 
   float err = raw_ang_dist.get();
   float err_deg = raw_ang_dist.degrees().get();
-  float i = 716, f = 60, p = 0.92, k = 2.3;
-  float kp = ((f - i) * std::pow(fabs(err_deg), p)) /
-                 (std::pow(fabs(err_deg), p) + std::pow(k, p)) +
-             i;
-  float kd = 400;
-  float prev = 0, min = 15, tol = 0.019, tol2 = .007, timeout = 0, timeout2 = 0,
+
+  float min = 140, x = fabs(err_deg);
+  bool skip = 0;
+  if (x == 0) {
+    x = 0.00001;
+    skip = 1;
+  }
+
+  float kp =
+      fmax(min, prop_filter[0] + prop_filter[1] * x + prop_filter[2] * 1 / x +
+                    prop_filter[3] * pow(x, prop_filter[4]));
+
+  float kd = derivative_filter[0] + derivative_filter[1] * x +
+             derivative_filter[2] * x * x + derivative_filter[3] * x * x * x +
+             derivative_filter[4] * x * x * x * x;
+
+  float prev = 0, tol = 0.008, tol2 = .007, timeout = 0, timeout2 = 0,
         maxtime = 2;
   float ang, prev_ang = 0;
 
   while (1) {
+    if (skip)
+      break;
     targ = desired_heading.radians().get();
     curr = get_heading().get();
     math::Angle raw_ang_dist = math::Angle(
@@ -263,8 +276,6 @@ void Driver::turn_pt(math::Angle desired_heading) {
     prev = err;
 
     float out = kp * err + kd * der;
-    if (fabs(out) < min)
-      out = math::Math::sgn(out) * min;
     move_left(out);
     move_right(-out);
 
@@ -297,16 +308,32 @@ void Driver::turn_swing(math::Angle desired_heading, int direction) {
 
   float err = raw_ang_dist.get();
   float err_deg = raw_ang_dist.degrees().get();
-  float i = 716, f = 60, p = 0.92, k = 2.3;
-  float kp = ((f - i) * std::pow(fabs(err_deg), p)) /
-                 (std::pow(fabs(err_deg), p) + std::pow(k, p)) +
-             i;
-  float kd = 400;
-  float prev = 0, min = 15, tol = 0.019, tol2 = .007, timeout = 0, timeout2 = 0,
+
+  float min = 140, x = fabs(err_deg);
+  bool skip = 0;
+  if (x == 0) {
+    x = 0.00001;
+    skip = 1;
+  }
+
+  float kp =
+      fmax(min, prop_filter[0] + prop_filter[1] * x + prop_filter[2] * 1 / x +
+                    prop_filter[3] * pow(x, prop_filter[4]));
+
+  float kd = derivative_filter[0] + derivative_filter[1] * x +
+             derivative_filter[2] * x * x + derivative_filter[3] * x * x * x +
+             derivative_filter[4] * x * x * x * x;
+
+  float prev = 0, tol = 0.008, tol2 = .007, timeout = 0, timeout2 = 0,
         maxtime = 2;
   float ang, prev_ang = 0;
 
+  // kp = 500;
+  // kd = 0;
+
   while (1) {
+    if (skip)
+      break;
     targ = desired_heading.radians().get();
     curr = get_heading().get();
     math::Angle raw_ang_dist = math::Angle(
@@ -317,9 +344,6 @@ void Driver::turn_swing(math::Angle desired_heading, int direction) {
     prev = err;
 
     float out = kp * err + kd * der;
-    if (fabs(out) < min)
-      out = math::Math::sgn(out) * min;
-
     if (direction > 0) {
       move_left(fabs(out) * math::Math::sgn(err));
       move_right(0);
@@ -346,11 +370,13 @@ void Driver::turn_swing(math::Angle desired_heading, int direction) {
     else
       timeout2 = 0;
 
-    if (timeout >= maxtime || timeout2 >= maxtime + 8)
+    if (timeout >= maxtime || timeout2 >= maxtime + 16)
       break;
 
     pros::delay(10);
   }
+  set_left_brake(utility::BrakeType::COAST);
+  set_right_brake(utility::BrakeType::COAST);
 }
 
 void Driver::control() {

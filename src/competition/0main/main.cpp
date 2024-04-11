@@ -3,10 +3,12 @@
 void initialize() {
   robot.set_controller_tuning("arcade", 1, "exponential", 0.02, 10, 0.95);
   pros::lcd::initialize();
+  // run_auton_sequence();
   // auton::run_selection();
   robot.setup();
   master.rumble("-");
   pros::lcd::print(2, "READY");
+  // kill_auton_sequence();
 }
 
 void disabled() {}
@@ -58,7 +60,7 @@ void opcontrol() {
   //   pros::delay(50);
   // }
   // robot.move(0);
-  Trajectory1D::set_constraints(70, 130, 1);
+  Trajectory1D::set_constraints(70, 130, 5);
   Trajectory2D::set_constraints(70, 130, 5, 11.0);
   // robot.set_brake(BrakeType::HOLD);
   // robot.straight(24);
@@ -69,12 +71,24 @@ void opcontrol() {
   // pros::delay(2000);
   // robot.brake();
 
-  robot.follow_prim(CubicBezier(Vector(25, 25), Vector(38, 50), 25.0), 1);
+  // robot.follow_prim(CubicBezier(Vector(-15, 30), Vector(-15, 30), 25.0), 1);
+  // robot.turn_pt(Angle(180, Unit::DEGREES));
+  // robot.follow_prim(CubicBezier(Vector(-45, 0), Vector(15, -36), 30.0), -1);
+  // robot.turn_pt(Angle(0, Unit::DEGREES));
 
+  robot.turn_swing(Angle(90, Unit::DEGREES), 1);
+
+  // robot.follow_prim(CubicBezier(Vector(25, 25), Vector(25, 25), 25.0), 1);
+  // robot.turn_pt(Angle(-90, Unit::DEGREES));
+  // robot.follow_prim(CubicBezier(Vector(25, 25), Vector(25, 25), 25.0), 2);
+  // // robot.follow_prim(CubicBezier(Vector(-41, 26), Vector(-41, 0), 28), 1);
+  // robot.turn_pt(Angle(0, Unit::DEGREES));
+  // robot.follow_prim(CubicBezier(Vector(-27, 15), Vector(-27, 15), 14.0), -1);
+  // robot.turn_pt(Angle(0, Unit::DEGREES));
   // Trajectory2D a(CubicBezier(Vector(30, 30), Vector(30, 30), 15.0));
   robot.brake();
 
-  // robot.follow_prim(CubicBezier(Vector(30, 30), Vector(30, 30), 15.0), 1);
+  // robot.follow_prim(CubicBezier(Vector(-30, 30), Vector(-30, 30), 15.0), 1);
   robot.move(0);
   // robot.move(-127);
   // pros::delay(30);
