@@ -126,7 +126,7 @@ void PositionTracker::set_position(math::Vector pos, math::Angle heading) {
 
 math::Vector PositionTracker::get_position() { return position; }
 
-void PositionTracker::set_heading(math::Angle a) { heading = a; }
+void PositionTracker::set_heading(math::Angle a) { heading = a.radians(); }
 
 math::Angle PositionTracker::get_heading() { return heading; }
 

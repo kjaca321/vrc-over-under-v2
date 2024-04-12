@@ -5,7 +5,7 @@ void initialize() {
   pros::lcd::initialize();
   // run_auton_sequence();
   // auton::run_selection();
-  robot.setup();
+  // robot.setup();
   master.rumble("-");
   pros::lcd::print(2, "READY");
   // kill_auton_sequence();
@@ -18,13 +18,13 @@ void competition_initialize() {}
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  auton::safe_6b();
-  Trajectory2D::set_constraints(70, 130, 15, 11.0);
-  // Trajectory2D traj(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0));
-  robot.set_brake(BrakeType::BRAKE);
-  robot.follow_prim(CubicBezier(Vector(30, 30), Vector(30, 30), 15.0), 1);
-  robot.brake();
-  pros::delay(100000);
+  auton::rush_6b();
+  // Trajectory2D::set_constraints(70, 130, 15, 11.0);
+  // // Trajectory2D traj(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0));
+  // robot.set_brake(BrakeType::BRAKE);
+  // robot.follow_prim(CubicBezier(Vector(30, 30), Vector(30, 30), 15.0), 1);
+  // robot.brake();
+  // pros::delay(100000);
   // CubicBezier raw_path(Vector(20, 20), Vector(20, 20), 6.0);
   // std::vector<math::Vector> spline = {};
 
@@ -46,57 +46,58 @@ void autonomous() {
 
 void opcontrol() {
   // if (auton::selected_auton == auton::num_autons) {
-  run_auton_sequence();
+  //   run_auton_sequence();
   //   pros::lcd::print(3, "running");
   //   auton::skills_start();
   //   kill_auton_sequence();
   // }
   // run_driver_sequence();
+  // autonomous();
 
-  // for (int i = 0; i < 128; i += 5) {
-  //   robot.move(i);
-  //   float vel = (robot.get_left_vel() + robot.get_right_vel()) / 2;
-  //   std::cout << Vector(vel, i).to_string() << std::endl;
-  //   pros::delay(50);
-  // }
-  // robot.move(0);
-  Trajectory1D::set_constraints(70, 130, 5);
-  Trajectory2D::set_constraints(70, 130, 5, 11.0);
-  // robot.set_brake(BrakeType::HOLD);
-  // robot.straight(24);
-  // robot.move(0);
-  // robot.move(-127);
-  // pros::delay(100);
+  // // for (int i = 0; i < 128; i += 5) {
+  // //   robot.move(i);
+  // //   float vel = (robot.get_left_vel() + robot.get_right_vel()) / 2;
+  // //   std::cout << Vector(vel, i).to_string() << std::endl;
+  // //   pros::delay(50);
+  // // }
+  // // robot.move(0);
+  // Trajectory1D::set_constraints(70, 130, 5);
+  // Trajectory2D::set_constraints(70, 130, 5, 11.0);
+  // // robot.set_brake(BrakeType::HOLD);
+  // // robot.straight(24);
+  // // robot.move(0);
+  // // robot.move(-127);
+  // // pros::delay(100);
+  // // robot.brake();
+  // // pros::delay(2000);
+  // // robot.brake();
+
+  // // robot.follow_prim(CubicBezier(Vector(-15, 30), Vector(-15, 30), 25.0), 1);
+  // // robot.turn_pt(Angle(180, Unit::DEGREES));
+  // // robot.follow_prim(CubicBezier(Vector(-45, 0), Vector(15, -36), 30.0), -1);
+  // // robot.turn_pt(Angle(0, Unit::DEGREES));
+
+  // robot.turn_swing(Angle(90, Unit::DEGREES), 1);
+
+  // // robot.follow_prim(CubicBezier(Vector(25, 25), Vector(25, 25), 25.0), 1);
+  // // robot.turn_pt(Angle(-90, Unit::DEGREES));
+  // // robot.follow_prim(CubicBezier(Vector(25, 25), Vector(25, 25), 25.0), 2);
+  // // // robot.follow_prim(CubicBezier(Vector(-41, 26), Vector(-41, 0), 28), 1);
+  // // robot.turn_pt(Angle(0, Unit::DEGREES));
+  // // robot.follow_prim(CubicBezier(Vector(-27, 15), Vector(-27, 15), 14.0), -1);
+  // // robot.turn_pt(Angle(0, Unit::DEGREES));
+  // // Trajectory2D a(CubicBezier(Vector(30, 30), Vector(30, 30), 15.0));
   // robot.brake();
-  // pros::delay(2000);
+
+  // // robot.follow_prim(CubicBezier(Vector(-30, 30), Vector(-30, 30), 15.0), 1);
+  // robot.move(0);
+  // // robot.move(-127);
+  // // pros::delay(30);
   // robot.brake();
 
-  // robot.follow_prim(CubicBezier(Vector(-15, 30), Vector(-15, 30), 25.0), 1);
-  // robot.turn_pt(Angle(180, Unit::DEGREES));
-  // robot.follow_prim(CubicBezier(Vector(-45, 0), Vector(15, -36), 30.0), -1);
-  // robot.turn_pt(Angle(0, Unit::DEGREES));
+  // while (1)
+  //   pros::delay(2);
 
-  robot.turn_swing(Angle(90, Unit::DEGREES), 1);
-
-  // robot.follow_prim(CubicBezier(Vector(25, 25), Vector(25, 25), 25.0), 1);
-  // robot.turn_pt(Angle(-90, Unit::DEGREES));
-  // robot.follow_prim(CubicBezier(Vector(25, 25), Vector(25, 25), 25.0), 2);
-  // // robot.follow_prim(CubicBezier(Vector(-41, 26), Vector(-41, 0), 28), 1);
-  // robot.turn_pt(Angle(0, Unit::DEGREES));
-  // robot.follow_prim(CubicBezier(Vector(-27, 15), Vector(-27, 15), 14.0), -1);
-  // robot.turn_pt(Angle(0, Unit::DEGREES));
-  // Trajectory2D a(CubicBezier(Vector(30, 30), Vector(30, 30), 15.0));
-  robot.brake();
-
-  // robot.follow_prim(CubicBezier(Vector(-30, 30), Vector(-30, 30), 15.0), 1);
-  robot.move(0);
-  // robot.move(-127);
-  // pros::delay(30);
-  robot.brake();
-
-  while (1)
-    pros::delay(2);
-
-  kill_auton_sequence();
-  pros::delay(2);
+  // kill_auton_sequence();
+  // pros::delay(2);
 }

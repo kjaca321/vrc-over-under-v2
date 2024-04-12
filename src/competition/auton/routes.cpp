@@ -8,142 +8,30 @@ float MAX_ACCEL = 130;
 #define V Vector
 
 void rush_6b() {
-  Trajectory2D::set_constraints(70, 130, 15, 11.0);
-  Trajectory1D::set_constraints(70, 140, 15);
-  sys_task::intake_req = 1;
-  sys_task::front_wings_req = 1;
-  pros::delay(200);
-  sys_task::front_wings_req = 0;
-  robot.follow_prim(CubicBezier(V(-19.5, 45), V(-19.5, 45), 15.0), 1);
-  robot.move(0);
-  pros::delay(100);
-  robot.follow_prim(CubicBezier(V(-33, 52), V(-33, 52), 12.0), -2);
-  sys_task::intake_req = 0;
-  robot.stop_fast();
-  robot.turn_pt(A(45, Unit::DEGREES));
-  robot.move(0);
-  sys_task::intake_rev_req = 1;
-  pros::delay(200);
-  robot.turn_pt(A(-90, Unit::DEGREES));
-  sys_task::intake_rev_req = 0;
-  sys_task::intake_req = 1;
-  robot.move(0);
-  robot.straight(38);
-  robot.stop_fast();
-  pros::delay(100);
-  Trajectory2D::set_constraints(51, 96, 15, 11.0);
-  robot.follow_prim(
-      []() {
-        pros::delay(200);
-        sys_task::intake_req = 0;
-        pros::delay(550);
-        sys_task::left_wing_req = 1;
-        sys_task::right_wing_req = 1;
-        pros::delay(500);
-        // sys_task::left_wing_req = 0;
-      },
-      CubicBezier(V(-17,50), V(-17, 50), 57.0), -1);
-  // robot.straight(-3);
-
-  // robot.straight(-30);
-  // robot.move(0);
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  // robot.turn_pt(Angle(-135, Unit::DEGREES));
-  // robot.stop();
-  // sys_task::left_wing_req = 1;
-  // sys_task::right_wing_req = 1;
-  // sys_task::intake_req = 0;
-  // robot.straight(-21);
-  // robot.stop_fast();
-  // robot.turn_pt(Angle(-135, Unit::DEGREES));
-  // robot.stop_fast();
-  // sys_task::left_wing_req = 0;
-  // pros::delay(150);
-  robot.move(0);
-  // robot.straight(14);
-  // robot.stop_fast();
-  // robot.follow_prim(CubicBezier(V(0, 18), V(-14, 30), 6.0), -1);
-  // robot.stop_fast();
-  sys_task::right_wing_req = 0;
-  sys_task::left_wing_req = 0;
-  robot.turn_pt(A(-160, Unit::DEGREES));
-  robot.move(-127);
-  pros::delay(570);
-  robot.stop_fast();
-  // robot.turn_pt(Angle(-175, Unit::DEGREES));
-  // robot.stop_fast();
-  // sys_task::right_wing_req = 1;
-
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 60);
-  sys_task::right_wing_req = 0;
-  // robot.straight(-35);
-  // robot.stop_fast();
-
-  sys_task::left_wing_req = 0;
-  robot.move(0);
-  // robot.turn_swing(A(180, Unit::DEGREES), 1);
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
-  // robot.straight(-15);
-  // robot.stop_fast();
-  sys_task::right_wing_req = 0;
-  robot.straight(11);
-  robot.stop_fast();
-  robot.turn_pt(A(15, Unit::DEGREES));
-  sys_task::intake_rev_req = 1;
-  pros::delay(250);
-  robot.straight(35);
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
-  robot.stop_fast();
-  pros::delay(200);
-  robot.straight(-8);
-
-  sys_task::intake_rev_req = 0;
-  robot.turn_pt(A(-60, Unit::DEGREES));
-  robot.stop_fast();
-  sys_task::intake_req = 1;
-  Trajectory1D::set_constraints(70, 160, 30);
-  robot.straight(64.5);
-  robot.straight(-6);
-  robot.stop_fast();
-  robot.turn_pt(A(70, Unit::DEGREES));
-  sys_task::intake_req = 0;
-  robot.stop_fast();
-  sys_task::intake_speed = 50;
-  sys_task::intake_rev_req = 1;
-  robot.straight(10);
-  robot.move(0);
-  pros::delay(250);
-  sys_task::intake_rev_req = 0;
-  sys_task::intake_speed = 127;
-  sys_task::intake_req = 1;
-  robot.turn_pt(A(-40, Unit::DEGREES));
-  robot.move(0);
-  robot.straight(45);
-  robot.stop_fast();
-  robot.straight(-6);
-  robot.turn_pt(A(90, Unit::DEGREES));
-  robot.stop_fast();
-  sys_task::intake_req = 0;
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 70);
-  sys_task::front_wings_req = 1;
-  sys_task::intake_rev_req = 1;
-  pros::delay(200);
-  robot.straight(55);
+  robot.set_heading(Angle(69, Unit::DEGREES));
+ sys_task::intake_req = 1;
+  // pros::delay(300);
   Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  sys_task::front_wings_req = 0;
-  sys_task::intake_rev_req = 0;
+  Trajectory2D::set_constraints(MAX_SPEED, MAX_ACCEL, 5, 11.0);
+  sys_task::front_wings_req = 1;
+  pros::delay(100);
+sys_task::front_wings_req = 0;
   pros::delay(150);
-  robot.straight(-10);
-  robot.stop();
-}
-
-void safe_6b() {
+  robot.straight(49);
+  // robot.straight(-43);
+  robot.follow_prim(CubicBezier(V(15,36), V(15,36), 8.0), -1);
+ sys_task::intake_req = 0;
+  robot.turn_pt(A(135, Unit::DEGREES));
+  sys_task::intake_rev_req = 1;
+  pros::delay(200);
+  sys_task::intake_rev_req = 0;
   sys_task::intake_req = 1;
-  pros::delay(250);
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  robot.straight(12);
-  robot.stop_fast();
-  Trajectory2D::set_constraints(51, 96, 15, 11.0);
+  // robot.turn_pt(A(-45, Unit::DEGREES));
+  // robot.straight(8);
+  robot.turn_pt(A(-1, Unit::DEGREES));
+  robot.straight(32);
+
+  // robot.stop_fast();
   // robot.follow_prim(
   //     []() {
   //       pros::delay(350);
@@ -165,7 +53,7 @@ void safe_6b() {
         pros::delay(500);
         // sys_task::left_wing_req = 0;
       },
-      CubicBezier(V(8,39), V(-18, 57), 30.0), -1);
+      CubicBezier(V(3,32), V(-15, 45), 38.0), -1);
  
  
   // // robot.straight(-3);
@@ -184,14 +72,14 @@ void safe_6b() {
   // robot.stop_fast();
   // sys_task::left_wing_req = 0;
   // pros::delay(150);
-  robot.move(0);
+  // robot.move(0);
   // robot.straight(14);
   // robot.stop_fast();
   // robot.follow_prim(CubicBezier(V(0, 18), V(-14, 30), 6.0), -1);
   // robot.stop_fast();
   sys_task::right_wing_req = 0;
   sys_task::left_wing_req = 0;
-  robot.turn_pt(A(-81, Unit::DEGREES));
+  robot.turn_pt(A(-78, Unit::DEGREES));
   robot.move(-127);
   pros::delay(700);
   robot.stop_fast();
@@ -199,41 +87,317 @@ void safe_6b() {
   // robot.stop_fast();
   // sys_task::right_wing_req = 1;
 
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 60);
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 20);
   sys_task::right_wing_req = 0;
   // robot.straight(-35);
   // robot.stop_fast();
 
   sys_task::left_wing_req = 0;
-  robot.move(0);
+  // robot.move(0);
   // robot.turn_swing(A(180, Unit::DEGREES), 1);
   // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
   // robot.straight(-15);
   // robot.stop_fast();
   sys_task::right_wing_req = 0;
-  robot.straight(11);
-  robot.stop_fast();
-  robot.turn_pt(A(98, Unit::DEGREES));
+  robot.straight(5);
+  // robot.stop_fast();
+  robot.turn_pt(A(101, Unit::DEGREES));
   sys_task::intake_rev_req = 1;
-  pros::delay(250);
-  Trajectory1D::set_constraints(70, 140, 60);
-  robot.straight(33);
+  pros::delay(250);  
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 20);
+  robot.straight(15);
   robot.stop_fast();
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 20);
   pros::delay(200);
-  robot.straight(-8.5);
+  robot.straight(-5);
   robot.move(0);
 
   sys_task::intake_rev_req = 0;
-  robot.turn_pt(A(31, Unit::DEGREES));
+  robot.turn_pt(A(22.3, Unit::DEGREES));
+  // robot.stop_fast();
+  sys_task::intake_req = 1;
+  Trajectory1D::set_constraints(70, 140, 20);
+  robot.straight(54);
+  robot.straight(-6);
+  // robot.stop_fast();
+  robot.turn_pt(A(135, Unit::DEGREES));
+  // robot.stop_fast();
+  sys_task::intake_req = 0;
+  Trajectory2D::set_constraints(68, 130, 15, 11.0);
+  robot.follow_prim(
+      []() {
+        pros::delay(400);
+        sys_task::intake_rev_req = 1;
+      },
+      CubicBezier(V(25,35), V(25, 35), 25.0), 1);
+
+  sys_task::intake_rev_req = 0;
+  robot.straight(-4);
+  // robot.stop_fast();
+  robot.turn_pt(A(0, Unit::DEGREES));
+  // robot.stop_fast();
+  Trajectory1D::set_constraints(70, 140, 20);
+  // robot.straight(28);
+  sys_task::intake_rev_req = 0;
+  sys_task::intake_speed = 127;
+  sys_task::intake_req = 1;
+  // robot.move(0);
+  // robot.turn_pt(A(41, Unit::DEGREES));
+  // Trajectory1D::set_constraints(59, 100, 10);
+  robot.straight(25);
+  // robot.stop_fast();
+  // pros::delay(100);
+  Trajectory1D::set_constraints(70, 140, 20);
+  // robot.stop_fast();
+  robot.straight(-4);
+  sys_task::intake_req = 0;
+  robot.turn_pt(A(-178, Unit::DEGREES));
+  // robot.stop_fast();
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 70);
+  sys_task::front_wings_req = 1;
+  sys_task::intake_rev_req = 1;
+  pros::delay(200);
+  robot.straight(50);
+  // robot.stop_fast();
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 20);
+  sys_task::front_wings_req = 0;
+  sys_task::intake_rev_req = 0;
+  pros::delay(150);
+  robot.straight(-5);
+  robot.stop();
+  pros::delay(2);
   robot.stop_fast();
+
+
+
+
+
+  // Trajectory2D::set_constraints(70, 130, 15, 11.0);
+  // Trajectory1D::set_constraints(70, 140, 15);
+  // sys_task::intake_req = 1;
+  // sys_task::front_wings_req = 1;
+  // pros::delay(200);
+  // sys_task::front_wings_req = 0;
+  // robot.follow_prim(CubicBezier(V(-19.5, 45), V(-19.5, 45), 15.0), 1);
+  // robot.move(0);
+  // pros::delay(100);
+  // robot.follow_prim(CubicBezier(V(-33, 52), V(-33, 52), 12.0), -2);
+  // sys_task::intake_req = 0;
+  // robot.stop_fast();
+  // robot.turn_pt(A(45, Unit::DEGREES));
+  // robot.move(0);
+  // sys_task::intake_rev_req = 1;
+  // pros::delay(200);
+  // robot.turn_pt(A(-90, Unit::DEGREES));
+  // sys_task::intake_rev_req = 0;
+  // sys_task::intake_req = 1;
+  // robot.move(0);
+  // robot.straight(38);
+  // robot.stop_fast();
+  // pros::delay(100);
+  // Trajectory2D::set_constraints(51, 96, 15, 11.0);
+  // robot.follow_prim(
+  //     []() {
+  //       pros::delay(200);
+  //       sys_task::intake_req = 0;
+  //       pros::delay(550);
+  //       sys_task::left_wing_req = 1;
+  //       sys_task::right_wing_req = 1;
+  //       pros::delay(500);
+  //       // sys_task::left_wing_req = 0;
+  //     },
+  //     CubicBezier(V(-17,50), V(-17, 50), 57.0), -1);
+  // // robot.straight(-3);
+
+  // // robot.straight(-30);
+  // // robot.move(0);
+  // // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
+  // // robot.turn_pt(Angle(-135, Unit::DEGREES));
+  // // robot.stop();
+  // // sys_task::left_wing_req = 1;
+  // // sys_task::right_wing_req = 1;
+  // // sys_task::intake_req = 0;
+  // // robot.straight(-21);
+  // // robot.stop_fast();
+  // // robot.turn_pt(Angle(-135, Unit::DEGREES));
+  // // robot.stop_fast();
+  // // sys_task::left_wing_req = 0;
+  // // pros::delay(150);
+  // robot.move(0);
+  // // robot.straight(14);
+  // // robot.stop_fast();
+  // // robot.follow_prim(CubicBezier(V(0, 18), V(-14, 30), 6.0), -1);
+  // // robot.stop_fast();
+  // sys_task::right_wing_req = 0;
+  // sys_task::left_wing_req = 0;
+  // robot.turn_pt(A(-160, Unit::DEGREES));
+  // robot.move(-127);
+  // pros::delay(570);
+  // robot.stop_fast();
+  // // robot.turn_pt(Angle(-175, Unit::DEGREES));
+  // // robot.stop_fast();
+  // // sys_task::right_wing_req = 1;
+
+  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 60);
+  // sys_task::right_wing_req = 0;
+  // // robot.straight(-35);
+  // // robot.stop_fast();
+
+  // sys_task::left_wing_req = 0;
+  // robot.move(0);
+  // // robot.turn_swing(A(180, Unit::DEGREES), 1);
+  // // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
+  // // robot.straight(-15);
+  // // robot.stop_fast();
+  // sys_task::right_wing_req = 0;
+  // robot.straight(11);
+  // robot.stop_fast();
+  // robot.turn_pt(A(15, Unit::DEGREES));
+  // sys_task::intake_rev_req = 1;
+  // pros::delay(250);
+  // robot.straight(35);
+  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
+  // robot.stop_fast();
+  // pros::delay(200);
+  // robot.straight(-8);
+
+  // sys_task::intake_rev_req = 0;
+  // robot.turn_pt(A(-60, Unit::DEGREES));
+  // robot.stop_fast();
+  // sys_task::intake_req = 1;
+  // Trajectory1D::set_constraints(70, 160, 30);
+  // robot.straight(64.5);
+  // robot.straight(-6);
+  // robot.stop_fast();
+  // robot.turn_pt(A(70, Unit::DEGREES));
+  // sys_task::intake_req = 0;
+  // robot.stop_fast();
+  // sys_task::intake_speed = 50;
+  // sys_task::intake_rev_req = 1;
+  // robot.straight(10);
+  // robot.move(0);
+  // pros::delay(250);
+  // sys_task::intake_rev_req = 0;
+  // sys_task::intake_speed = 127;
+  // sys_task::intake_req = 1;
+  // robot.turn_pt(A(-40, Unit::DEGREES));
+  // robot.move(0);
+  // robot.straight(45);
+  // robot.stop_fast();
+  // robot.straight(-6);
+  // robot.turn_pt(A(90, Unit::DEGREES));
+  // robot.stop_fast();
+  // sys_task::intake_req = 0;
+  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 70);
+  // sys_task::front_wings_req = 1;
+  // sys_task::intake_rev_req = 1;
+  // pros::delay(200);
+  // robot.straight(55);
+  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
+  // sys_task::front_wings_req = 0;
+  // sys_task::intake_rev_req = 0;
+  // pros::delay(150);
+  // robot.straight(-10);
+  // robot.stop();
+}
+
+void safe_6b() {
+  sys_task::intake_req = 1;
+  pros::delay(300);
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
+  robot.straight(10);
+  // robot.stop_fast();
+  Trajectory2D::set_constraints(MAX_SPEED, MAX_ACCEL, 15, 11.0);
+  // robot.follow_prim(
+  //     []() {
+  //       pros::delay(350);
+  //       sys_task::intake_req = 0;
+  //       pros::delay(400);
+  //       sys_task::left_wing_req = 1;
+  //       sys_task::right_wing_req = 1;
+  //       pros::delay(500);
+  //       // sys_task::left_wing_req = 0;
+  //     },
+  //     CubicBezier(V(-17,50), V(-17, 50), 57.0), -1);
+  robot.follow_prim(
+      []() {
+        pros::delay(350);
+        sys_task::intake_req = 0;
+        pros::delay(400);
+        sys_task::left_wing_req = 1;
+        sys_task::right_wing_req = 1;
+        pros::delay(500);
+        // sys_task::left_wing_req = 0;
+      },
+      CubicBezier(V(0,35), V(-15.5, 54), 40.0), -1);
+ 
+ 
+  // // robot.straight(-3);
+
+  // robot.straight(-30);
+  // robot.move(0);
+  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
+  // robot.turn_pt(Angle(-135, Unit::DEGREES));
+  // robot.stop();
+  // sys_task::left_wing_req = 1;
+  // sys_task::right_wing_req = 1;
+  // sys_task::intake_req = 0;
+  // robot.straight(-21);
+  // robot.stop_fast();
+  // robot.turn_pt(Angle(-135, Unit::DEGREES));
+  // robot.stop_fast();
+  // sys_task::left_wing_req = 0;
+  // pros::delay(150);
+  // robot.move(0);
+  // robot.straight(14);
+  // robot.stop_fast();
+  // robot.follow_prim(CubicBezier(V(0, 18), V(-14, 30), 6.0), -1);
+  // robot.stop_fast();
+  sys_task::right_wing_req = 0;
+  sys_task::left_wing_req = 0;
+  robot.turn_pt(A(-78, Unit::DEGREES));
+  robot.move(-127);
+  pros::delay(700);
+  robot.stop_fast();
+  // robot.turn_pt(Angle(-175, Unit::DEGREES));
+  // robot.stop_fast();
+  // sys_task::right_wing_req = 1;
+
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 5);
+  sys_task::right_wing_req = 0;
+  // robot.straight(-35);
+  // robot.stop_fast();
+
+  sys_task::left_wing_req = 0;
+  // robot.move(0);
+  // robot.turn_swing(A(180, Unit::DEGREES), 1);
+  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
+  // robot.straight(-15);
+  // robot.stop_fast();
+  sys_task::right_wing_req = 0;
+  robot.straight(5);
+  // robot.stop_fast();
+  robot.turn_pt(A(101, Unit::DEGREES));
+  sys_task::intake_rev_req = 1;
+  pros::delay(250);  
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 5);
+  robot.straight(15);
+  robot.stop_fast();
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
+  pros::delay(200);
+  robot.straight(-5);
+  robot.move(0);
+
+  sys_task::intake_rev_req = 0;
+  robot.turn_pt(A(26.5, Unit::DEGREES));
+  // robot.stop_fast();
   sys_task::intake_req = 1;
   Trajectory1D::set_constraints(70, 140, 15);
-  robot.straight(63);
+  robot.straight(54);
   robot.straight(-6);
-  robot.stop_fast();
-  robot.turn_pt(A(135, Unit::DEGREES));
-  robot.stop_fast();
+  // robot.stop_fast();
+  robot.turn_pt(A(140, Unit::DEGREES));
+  // robot.stop_fast();
   sys_task::intake_req = 0;
   Trajectory2D::set_constraints(68, 120, 15, 11.0);
   robot.follow_prim(
@@ -245,32 +409,32 @@ void safe_6b() {
 
   sys_task::intake_rev_req = 0;
   robot.straight(-2);
-  robot.stop_fast();
+  // robot.stop_fast();
   robot.turn_pt(A(118, Unit::DEGREES));
-  robot.stop_fast();
+  // robot.stop_fast();
   Trajectory1D::set_constraints(70, 140, 15);
   robot.straight(-9);
   sys_task::intake_rev_req = 0;
   sys_task::intake_speed = 127;
   sys_task::intake_req = 1;
   robot.move(0);
-  robot.turn_pt(A(38, Unit::DEGREES));
+  robot.turn_pt(A(41, Unit::DEGREES));
   Trajectory1D::set_constraints(59, 100, 10);
-  robot.straight(29);
+  robot.straight(24.5);
   robot.stop_fast();
   pros::delay(100);
   Trajectory1D::set_constraints(70, 140, 15);
-  robot.stop_fast();
-  robot.straight(-2);
+  // robot.stop_fast();
+  // robot.straight(-2);
   sys_task::intake_req = 0;
-  robot.turn_pt(A(180, Unit::DEGREES));
-  robot.stop_fast();
+  robot.turn_pt(A(-179, Unit::DEGREES));
+  // robot.stop_fast();
   Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 70);
   sys_task::front_wings_req = 1;
   sys_task::intake_rev_req = 1;
   pros::delay(200);
   robot.straight(50);
-  robot.stop_fast();
+  // robot.stop_fast();
   Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
   sys_task::front_wings_req = 0;
   sys_task::intake_rev_req = 0;
