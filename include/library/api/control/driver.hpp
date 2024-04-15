@@ -47,6 +47,7 @@ public:
   void straight(void (*sub)(void), float distance);
   void turn_pt(math::Angle desired_heading);
   void turn_swing(math::Angle desired_heading, int direction);
+  void mtp(math::Vector target, int direction);
 
   /**
    * Commands the robot using the controller for the driver control period.
