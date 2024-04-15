@@ -124,10 +124,8 @@ void Driver::follow_prim(Trajectory2D trajectory, int direction) {
     float right_control = des_lin_vel - w * des_ang_vel * trackwidth / 2;
 
     /* apply tuning factors to left and right control outputs, scaled based on a
-     * gaussian distribution curve, where 'kv' is the feedforward velocity
-     * factor, 'ka' is the feedforward acceleration factor, and 'kp' is the
+     * gaussian distribution curve, where 'ka' is the feedforward acceleration factor, and 'kp' is the
      * feedback factor */
-
     float left_ff = 0, right_ff = 0;
     for (int n = 0; n <= 7; n++) {
       left_ff += args[n] * pow(left_control, n);
@@ -181,10 +179,8 @@ void Driver::follow_prim(void (*sub)(void), Trajectory2D trajectory,
     float right_control = des_lin_vel - w * des_ang_vel * trackwidth / 2;
 
     /* apply tuning factors to left and right control outputs, scaled based on a
-     * gaussian distribution curve, where 'kv' is the feedforward velocity
-     * factor, 'ka' is the feedforward acceleration factor, and 'kp' is the
+     * gaussian distribution curve, where 'ka' is the feedforward acceleration factor, and 'kp' is the
      * feedback factor */
-
     float left_ff = 0, right_ff = 0;
     for (int n = 0; n <= 7; n++) {
       left_ff += args[n] * pow(left_control, n);
@@ -366,40 +362,57 @@ void Driver::turn_swing(math::Angle desired_heading, int direction) {
 }
 
 void Driver::mtp(math::Vector target, int direction) {
+  //initialize movement and turning feedback controllers from static gains
   utility::PID lateral(1.5, 0, 10);
   utility::PID angular(150, 0, 1070);
+
+  //initialize error-based exit conditions
   float dist_tol = .5;
   math::Vector pos_tol(.5, .5);
   float prev_ang = 0, prev_lat = 0;
+
+  //initialize error terms and retrieve initial position
   math::Vector curr = get_position();
   float dist = target.distance(curr);
   math::Vector pos_err = target - curr;
   float min_vel = 5;
 
   do {
+    //retrieve current pose and evaluate current state errors
     curr = get_position();
     math::Angle curr_ang = get_heading();
     dist = target.distance(curr);
     pos_err = target - curr;
+
+    //determine angular error as differential between current heading and desired heading from target position
     float ang_err = atan2(pos_err.y, pos_err.x) - curr_ang.get();
+
+    //determine linear error as distance from target times a factor to prevent drifting away from target
     float lat_err = dist * math::Math::sgn(cos(ang_err));
+
+    //retrieve angular and linear outputs from constructed gains
     float ang_term = angular.get_output(ang_err, prev_ang, 10);
     float lat_term = lateral.get_output(lat_err, prev_lat, 10);
 
+    //convert linear/angular outputs to left/right outputs through differential kinematics
     float left = lat_term + ang_term;
     float right = lat_term - ang_term;
+
+    /* to prevent saturation of motor velocities, preserve ratio bewtween
+     * left and right sides if max velocity is exceeded */
     float ratio = fmax(fabs(left), fabs(right)) / 127;
     if (ratio > 1) {
       left /= ratio;
       right /= ratio;
     }
 
+    //send outputs
     move_left(left);
     move_right(right);
 
     pros::delay(10);
   } while (dist < dist_tol && pos_err.magnitude() < pos_tol.magnitude() ||
-           get_left_vel() < min_vel && get_right_vel() < min_vel);
+           get_left_vel() < min_vel && get_right_vel() < min_vel); //check exit conditions
 }
 
 void Driver::control() {
@@ -465,13 +478,15 @@ void Driver::control() {
     float lvel = v_out + n;
     float rvel = v_out - n;
 
-    //
+    /* to prevent saturation of motor velocities, preserve ratio bewtween
+     * left and right sides if max velocity is exceeded */
     float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
     if (ratio > 1) {
       lvel /= ratio;
       rvel /= ratio;
     }
 
+    //send outputs
     move_left(lvel);
     move_right(rvel);
 
