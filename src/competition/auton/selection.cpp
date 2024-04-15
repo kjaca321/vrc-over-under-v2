@@ -34,7 +34,7 @@ void run_selection() {
       break;
     case 4:
       auton_str = "rush 6b         ";
-      break;      
+      break;
     case 5:
       auton_str = "safe close      ";
       break;
@@ -75,8 +75,8 @@ void run_auton() {
     auton::safe_3b_touch();
     break;
   case 4:
-    auton::rush_6b();
-    break;    
+    auton::rush_6b_mid();
+    break;
   case 5:
     auton::safe_close();
     break;

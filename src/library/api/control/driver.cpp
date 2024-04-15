@@ -21,20 +21,31 @@ Driver::Driver(std::vector<int> left_ports, std::vector<int> right_ports,
       driver_max_velocity(127) {}
 
 void Driver::straight(float distance) {
+  // seperate sign from magnitude of target value (for feed control)
   float dir = math::Math::sgn(distance);
   distance = std::abs(distance);
+
+  // create a motion profiled trajectory of wheel velocities from target
+  // distance
   Trajectory1D path(distance);
-  float kv = 1.3, ka = 0.02, kp = .7;
+
+  // constant feedforward acceleration and feedback
+  float ka = 0.02, kp = .7;
+
+  // iterate through wheel velocities
   for (math::Pose1D pose : path.get()) {
+    // fetch desired pose
     float des_dist = pose.pos;
     float des_vel = pose.vel;
     float des_acc = pose.acc;
 
+    // feedforward velocity mapping
     float ff = 0;
     for (int n = 0; n <= 7; n++) {
       ff += args[n] * pow(des_vel, n);
     }
 
+    // send outputs
     float out = ff + ka * des_acc +
                 kp * (des_vel - (get_left_vel() + get_right_vel()) / 2);
     move(dir * out);
@@ -43,21 +54,33 @@ void Driver::straight(float distance) {
 }
 
 void Driver::straight(void (*sub)(void), float distance) {
+  pros::Task inside = pros::Task(sub);
+
+  // seperate sign from magnitude of target value (for feed control)
   float dir = math::Math::sgn(distance);
   distance = std::abs(distance);
+
+  // create a motion profiled trajectory of wheel velocities from target
+  // distance
   Trajectory1D path(distance);
-  float kv = 1.3, ka = 0.03, kp = .7;
-  pros::Task inside = pros::Task(sub);
+
+  // constant feedforward acceleration and feedback
+  float ka = 0.02, kp = .7;
+
+  // iterate through wheel velocities
   for (math::Pose1D pose : path.get()) {
+    // fetch desired pose
     float des_dist = pose.pos;
     float des_vel = pose.vel;
     float des_acc = pose.acc;
 
+    // feedforward velocity mapping
     float ff = 0;
     for (int n = 0; n <= 7; n++) {
       ff += args[n] * pow(des_vel, n);
     }
 
+    // send outputs
     float out = ff + ka * des_acc +
                 kp * (des_vel - (get_left_vel() + get_right_vel()) / 2);
     move(dir * out);
@@ -394,17 +417,6 @@ void Driver::control() {
       wt_prev = wt;
     }
 
-    // if (input::Button::down_pressed) {
-    // float lvel = input::Analog::get_left_y() + input::Analog::get_right_x();
-    // float rvel = input::Analog::get_left_y() - input::Analog::get_right_x();
-    // float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
-    // if (ratio > 1) {
-    //   lvel /= ratio;
-    //   rvel /= ratio;
-    // }
-    // move_left(.6*lvel);
-    // move_right(.6*rvel);
-    // } else {
     float n = input::Analog::get_right_x();
     float lvel = v_out + n;
     float rvel = v_out - n;
@@ -416,7 +428,6 @@ void Driver::control() {
 
     move_left(lvel);
     move_right(rvel);
-    // }
 
     pros::Task::delay_until(&nw, 1000 * dt);
   }
