@@ -205,21 +205,25 @@ void Driver::follow_prim(void (*sub)(void), Trajectory2D trajectory,
 }
 
 void Driver::turn_pt(math::Angle desired_heading) {
+  //evalute angle to turn (initial error)
   float targ = desired_heading.radians().get();
   float curr = get_heading().get();
   math::Angle raw_ang_dist =
       math::Angle(math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
 
+  //setup usable error cases
   float err = raw_ang_dist.get();
   float err_deg = raw_ang_dist.degrees().get();
-
   float min = 140, x = fabs(err_deg);
+  
+  //optimize controller efficiency by pre-checking error tolerance
   bool skip = 0;
   if (x == 0) {
     x = 0.00001;
     skip = 1;
   }
 
+  //initialize PID controller with autotuned gains
   utility::PID controller(
       fmax(min, prop_filter[0] + prop_filter[1] * x + prop_filter[2] * 1 / x +
                     prop_filter[3] * pow(x, prop_filter[4])),
@@ -228,37 +232,45 @@ void Driver::turn_pt(math::Angle desired_heading) {
           derivative_filter[2] * x * x + derivative_filter[3] * x * x * x +
           derivative_filter[4] * x * x * x * x);
 
+  //setup loop exit conditions and derivative conditions
   float prev = 0, tol = 0.008, tol2 = .007, timeout = 0, timeout2 = 0,
         maxtime = 2;
   float ang, prev_ang = 0;
 
-  while (!skip) {
+  while (!skip) { //if initial error is greater than tolerance
+    //reevaluate angle to turn (error)
     targ = desired_heading.radians().get();
     curr = get_heading().get();
     math::Angle raw_ang_dist = math::Angle(
         math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
 
+    // retrieve output from constructed PID with autotuned gains
     err = raw_ang_dist.get();
-
     float out = controller.get_output(err, prev, 1);
     prev = err;
+
+    //send outputs
     move_left(out);
     move_right(-out);
 
+    //determine angular velocity (for exit conditions)
     ang = curr;
     float del_ang = ang - prev_ang;
     prev_ang = ang;
 
+    //evaluate error tolerance and increment settle time
     if (fabs(err) < tol)
       timeout++;
     else
       timeout = 0;
 
+    //evaluate angular velocity timeout and increment settle time
     if (fabs(del_ang) < tol2)
       timeout2++;
     else
       timeout2 = 0;
 
+    //check for settle conditions and exit if met
     if (timeout >= maxtime || timeout2 >= maxtime + 8)
       break;
 
@@ -267,21 +279,25 @@ void Driver::turn_pt(math::Angle desired_heading) {
 }
 
 void Driver::turn_swing(math::Angle desired_heading, int direction) {
+  //evalute angle to turn (initial error)
   float targ = desired_heading.radians().get();
   float curr = get_heading().get();
   math::Angle raw_ang_dist =
       math::Angle(math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
 
+  //setup usable error cases
   float err = raw_ang_dist.get();
   float err_deg = raw_ang_dist.degrees().get();
-
   float min = 140, x = fabs(err_deg);
+
+  //optimize controller efficiency by pre-checking error tolerance
   bool skip = 0;
   if (x == 0) {
     x = 0.00001;
     skip = 1;
   }
 
+  //initialize PID controller with autotuned gains
   utility::PID controller(
       fmax(min, prop_filter[0] + prop_filter[1] * x + prop_filter[2] * 1 / x +
                     prop_filter[3] * pow(x, prop_filter[4])),
@@ -290,46 +306,56 @@ void Driver::turn_swing(math::Angle desired_heading, int direction) {
           derivative_filter[2] * x * x + derivative_filter[3] * x * x * x +
           derivative_filter[4] * x * x * x * x);
 
+  //setup loop exit conditions and derivative conditions
   float prev = 0, tol = 0.008, tol2 = .007, timeout = 0, timeout2 = 0,
         maxtime = 2;
   float ang, prev_ang = 0;
 
-  while (!skip) {
+  while (!skip) { //if initial error is greater than tolerance
+    //reevaluate angle to turn (error)
     targ = desired_heading.radians().get();
     curr = get_heading().get();
     math::Angle raw_ang_dist = math::Angle(
         math::Math::find_min_angle(targ, curr), math::Unit::RADIANS);
 
+    // retrieve output from constructed PID with autotuned gains
     err = raw_ang_dist.get();
     float out = controller.get_output(err, prev, 1);
     prev = err;
 
-    if (direction > 0) {
+    //left/right swing output conditions
+    if (direction > 0) { //if left specified
+      //move left, hold right
       move_left(fabs(out) * math::Math::sgn(err));
       move_right(0);
       set_left_brake(utility::BrakeType::COAST);
       set_right_brake(utility::BrakeType::BRAKE);
-    } else {
+    } else { //if right specified
+      //move right, hold left
       move_left(0);
       move_right(-fabs(out) * math::Math::sgn(err));
       set_left_brake(utility::BrakeType::BRAKE);
       set_right_brake(utility::BrakeType::COAST);
     }
 
+    //determine angular velocity (for exit conditions)
     ang = curr;
     float del_ang = ang - prev_ang;
     prev_ang = ang;
 
+    //evaluate error tolerance and increment settle time
     if (fabs(err) < tol)
       timeout++;
     else
       timeout = 0;
 
+    //evaluate angular velocity timeout and increment settle time
     if (fabs(del_ang) < tol2)
       timeout2++;
     else
       timeout2 = 0;
 
+    //check for settle conditions and exit if met
     if (timeout >= maxtime || timeout2 >= maxtime + 16)
       break;
 
@@ -377,49 +403,69 @@ void Driver::mtp(math::Vector target, int direction) {
 }
 
 void Driver::control() {
+  //initialize output velocity and slew acceleration constants
   float v_out = 0, w_out = 0, dt = 0.01, tolerance = 0.8;
   float accel_static = 1000, vt = 0, vt_prev = 0;
   float accelw_static = 1600, wt = 0, wt_prev = 0;
   float accel, accelw;
   float max_lin = 127;
   float max_ang = 127;
-  // float w_deadzone = 85;
+  
   while (1) {
+    //reset brake type if changed elsewhere
     set_brake(utility::BrakeType::COAST);
+    
+    //measure current time for accurate delay timing
     std::uint32_t nw = pros::millis();
+
+    //measure input error (discrete derivative of current output)
     float ve = input::Analog::get_left_y() - v_out;
     float we = input::Analog::get_right_x() - w_out;
 
-    if (math::Math::sgn(ve) < 0)
-      accel = accel_static + 300;
+    
+    if (math::Math::sgn(ve) < 0) //during linear deceleration
+      accel = accel_static + 300; //increase linear acceleration
     else
-      accel = accel_static;
-    if (math::Math::sgn(we) < 0)
-      accelw = accelw_static + 300;
+      accel = accel_static; //revert linear acceleration
+    if (math::Math::sgn(we) < 0) //during angular deceleration
+      accelw = accelw_static + 300; //increase angular acceleration
     else
-      accelw = accelw_static;
+      accelw = accelw_static; //revert angular acceleration
 
+    //when linear error is over tolerance (prevents drifting)
     if (fabs(ve) > tolerance) {
+      //accumulate linear velocity from specified acceleration and restrict it to static max velocity
       vt += math::Math::sgn(ve) * accel * dt;
       vt = math::Math::sgn(vt) * fmin(fabs(vt), max_lin);
+      
+      //evaluate velocity differential and update output/error values
       float dv = vt - vt_prev;
       v_out += dv;
       ve -= dv;
       vt_prev = vt;
     }
 
+    //when angular error is over tolerance (prevents drifting)
     if (fabs(we) > tolerance) {
+      //accumulate angular velocity from specified acceleration and restrict it to static max velocity
       wt += math::Math::sgn(we) * accelw * dt;
       wt = math::Math::sgn(wt) * fmin(fabs(wt), max_ang);
+
+      //evaluate velocity differential and update output/error values
       float dw = wt - wt_prev;
       w_out += dw;
       we -= dw;
       wt_prev = wt;
     }
 
+    //prioritize turning through 1:1 turn stick mapping
     float n = input::Analog::get_right_x();
+    
+    //convert linear/angular velocities to left/right velocites through differential kinematics
     float lvel = v_out + n;
     float rvel = v_out - n;
+
+    //
     float ratio = std::max(std::abs(lvel), std::abs(rvel)) / 127;
     if (ratio > 1) {
       lvel /= ratio;
