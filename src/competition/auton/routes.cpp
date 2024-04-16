@@ -316,13 +316,17 @@ void safe_6b() {
   robot.stop_fast();
 }
 
-void safe_4b() {
-  sys_task::intake_req = 1;
-  pros::delay(250);
+void safe_6b_touch() {
+  // initialize motion profiles
   Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  robot.straight(12);
-  robot.stop_fast();
-  Trajectory2D::set_constraints(51, 96, 15, 11.0);
+  Trajectory2D::set_constraints(MAX_SPEED, MAX_ACCEL, 15, 11.0);
+
+  // grab elevation bar ball
+  sys_task::intake_req = 1;
+  pros::delay(300);
+  robot.straight(10);
+
+  // score balls into side of goal
   robot.follow_prim(
       []() {
         pros::delay(350);
@@ -331,173 +335,99 @@ void safe_4b() {
         sys_task::left_wing_req = 1;
         sys_task::right_wing_req = 1;
         pros::delay(500);
-        // sys_task::left_wing_req = 0;
       },
-      CubicBezier(V(-17, 50), V(-17, 50), 57.0), -1);
-  // robot.straight(-3);
-
-  // robot.straight(-30);
-  // robot.move(0);
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  // robot.turn_pt(Angle(-135, Unit::DEGREES));
-  // robot.stop();
-  // sys_task::left_wing_req = 1;
-  // sys_task::right_wing_req = 1;
-  // sys_task::intake_req = 0;
-  // robot.straight(-21);
-  // robot.stop_fast();
-  // robot.turn_pt(Angle(-135, Unit::DEGREES));
-  // robot.stop_fast();
-  // sys_task::left_wing_req = 0;
-  // pros::delay(150);
-  robot.move(0);
-  // robot.straight(14);
-  // robot.stop_fast();
-  // robot.follow_prim(CubicBezier(V(0, 18), V(-14, 30), 6.0), -1);
-  // robot.stop_fast();
+      CubicBezier(V(3, 32), V(-15, 45), 38.0), -1);
   sys_task::right_wing_req = 0;
   sys_task::left_wing_req = 0;
-  robot.turn_pt(A(-65, Unit::DEGREES));
+  robot.turn_pt(A(-78, Unit::DEGREES));
   robot.move(-127);
   pros::delay(700);
   robot.stop_fast();
-  // robot.turn_pt(Angle(-175, Unit::DEGREES));
-  // robot.stop_fast();
-  // sys_task::right_wing_req = 1;
 
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 60);
+  // turn around, score held ball, back out
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 20);
   sys_task::right_wing_req = 0;
-  // robot.straight(-35);
-  // robot.stop_fast();
-
   sys_task::left_wing_req = 0;
-  robot.move(0);
-  // robot.turn_swing(A(180, Unit::DEGREES), 1);
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
-  // robot.straight(-15);
-  // robot.stop_fast();
-  sys_task::right_wing_req = 0;
-  robot.straight(11);
-  robot.stop_fast();
-  robot.turn_pt(A(100, Unit::DEGREES));
+  robot.straight(5);
+  robot.turn_pt(A(101, Unit::DEGREES));
   sys_task::intake_rev_req = 1;
   pros::delay(250);
-  Trajectory1D::set_constraints(70, 140, 60);
-  robot.straight(33);
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
+  robot.straight(15);
   robot.stop_fast();
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 20);
   pros::delay(200);
-  robot.straight(-8.5);
-  robot.move(0);
-
+  robot.straight(-5);
   sys_task::intake_rev_req = 0;
-  robot.turn_pt(A(30.5, Unit::DEGREES));
-  robot.stop_fast();
+
+  // grab bottom mid ball
+  robot.turn_pt(A(22.3, Unit::DEGREES));
   sys_task::intake_req = 1;
-  Trajectory1D::set_constraints(70, 140, 15);
-  robot.straight(63);
+  Trajectory1D::set_constraints(70, 140, 20);
+  robot.straight(54);
   robot.straight(-6);
-  robot.stop_fast();
+
+  // turn and score bottom mid ball, back out
   robot.turn_pt(A(135, Unit::DEGREES));
-  robot.stop_fast();
   sys_task::intake_req = 0;
-  Trajectory2D::set_constraints(68, 120, 15, 11.0);
+  Trajectory2D::set_constraints(68, 130, 15, 11.0);
   robot.follow_prim(
       []() {
-        pros::delay(500);
+        pros::delay(400);
         sys_task::intake_rev_req = 1;
       },
-      CubicBezier(V(28, 40), V(28, 40), 28.0), 1);
+      CubicBezier(V(25, 35), V(25, 35), 25.0), 1);
+  sys_task::intake_rev_req = 0;
+  robot.straight(-2);
 
+  // turn and grab far mid ball
+  robot.turn_pt(A(118, Unit::DEGREES));
+  Trajectory1D::set_constraints(70, 140, 15);
+  robot.straight(-9);
+  sys_task::intake_rev_req = 0;
+  sys_task::intake_req = 1;
+  robot.turn_pt(A(41, Unit::DEGREES));
+  robot.straight(24.5);
+  robot.stop_fast();
+  pros::delay(100);
+
+  // score/push far mid and mid ball together
+  sys_task::intake_req = 0;
+  robot.turn_pt(A(-179, Unit::DEGREES));
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 70);
+  sys_task::front_wings_req = 1;
+  sys_task::intake_rev_req = 1;
+  pros::delay(200);
+  robot.straight(50);
+
+  // back out
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
+  sys_task::front_wings_req = 0;
   sys_task::intake_rev_req = 0;
   robot.straight(-5);
-  robot.stop_fast();
-  robot.turn_pt(A(-96, Unit::DEGREES));
-  robot.stop_fast();
-  robot.straight(62);
-  robot.stop_fast();
-  robot.turn_pt(A(0, Unit::DEGREES));
-  robot.stop_fast();
-  Trajectory1D::set_constraints(40, 90, 8);
-  robot.straight(34.5);
-  robot.stop();
-  // sys_task::intake_req = 1;
-  // pros::delay(250);
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  // robot.straight(12);
-  // robot.stop();
-  // Trajectory1D::set_constraints(MAX_SPEED * 0.65, MAX_ACCEL, 5);
-  // robot.straight(-26);
-  // robot.stop();
-  // // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  // robot.turn_pt(A(-45, Unit::DEGREES));
-  // // robot.stop();
-  // sys_task::left_wing_req = 1;
-  // sys_task::right_wing_req = 1;
-  // sys_task::intake_req = 0;
-  // robot.straight(-16);
-  // sys_task::left_wing_req = 0;
-  // pros::delay(150);
-  // robot.stop();
-  // robot.turn_pt(A(-85, Unit::DEGREES));
-  // // robot.stop();
-  // // sys_task::right_wing_req = 1;
 
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
-  // sys_task::right_wing_req = 0;
-  // robot.straight(-35);
-  // // robot.stop();
-  // robot.straight(11);
-  // robot.straight(-35);
-  // robot.stop();
-  // robot.straight(11);
-  // robot.turn_pt(A(101, Unit::DEGREES));
-  // sys_task::intake_rev_req = 1;
-  // pros::delay(250);
-  // robot.straight(31);
-  // robot.straight(-20);
-  // robot.straight(31);
-  // robot.straight(-27);
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
-  // sys_task::intake_rev_req = 0;
-  // robot.stop();
-  // sys_task::intake_rev_req = 0;
-  // robot.turn_pt(A(28, Unit::DEGREES));
-  // robot.stop();
-  // sys_task::intake_req = 1;
-  // robot.straight(57);
-  // robot.straight(-6);
-  // robot.stop();
-  // robot.turn_pt(A(150, Unit::DEGREES));
-  // robot.stop();
-  // robot.straight(23);
-  // robot.turn_pt(A(180, Unit::DEGREES));
-  // robot.stop();
-  // sys_task::intake_req = 0;
-  // sys_task::intake_rev_req = 1;
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
-  // robot.straight(35);
-  // robot.stop();
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
-  // robot.straight(-5);
-  // robot.stop();
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
-  // robot.straight(20);
-  // robot.stop();
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
-  // robot.straight(-5);
-  // robot.stop();
-  // sys_task::intake_rev_req = 0;
-  // pros::delay(2);
+  //touch bar
+  robot.follow_prim(
+      []() {
+        pros::delay(400);
+        sys_task::left_wing_req = 1;
+      },
+      CubicBezier(V(-40, 32), V(-40, 32), 33.0), -1);
+  robot.move(0);
+  robot.stop();
 }
 
-void safe_3b_touch() {
-  sys_task::intake_req = 1;
-  pros::delay(250);
+void safe_4b_touch() {
+  // initialize motion profiles
   Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  robot.straight(12);
-  robot.stop_fast();
-  Trajectory2D::set_constraints(51, 96, 15, 11.0);
+  Trajectory2D::set_constraints(MAX_SPEED, MAX_ACCEL, 15, 11.0);
+
+  // grab elevation bar ball
+  sys_task::intake_req = 1;
+  pros::delay(300);
+  robot.straight(10);
+
+  // score balls into side of goal
   robot.follow_prim(
       []() {
         pros::delay(350);
@@ -506,127 +436,60 @@ void safe_3b_touch() {
         sys_task::left_wing_req = 1;
         sys_task::right_wing_req = 1;
         pros::delay(500);
-        // sys_task::left_wing_req = 0;
       },
-      CubicBezier(V(-17, 50), V(-17, 50), 57.0), -1);
-  // robot.straight(-3);
-
-  // robot.straight(-30);
-  // robot.move(0);
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  // robot.turn_pt(Angle(-135, Unit::DEGREES));
-  // robot.stop();
-  // sys_task::left_wing_req = 1;
-  // sys_task::right_wing_req = 1;
-  // sys_task::intake_req = 0;
-  // robot.straight(-21);
-  // robot.stop_fast();
-  // robot.turn_pt(Angle(-135, Unit::DEGREES));
-  // robot.stop_fast();
-  // sys_task::left_wing_req = 0;
-  // pros::delay(150);
-  robot.move(0);
-  // robot.straight(14);
-  // robot.stop_fast();
-  // robot.follow_prim(CubicBezier(V(0, 18), V(-14, 30), 6.0), -1);
-  // robot.stop_fast();
+      CubicBezier(V(3, 32), V(-15, 45), 38.0), -1);
   sys_task::right_wing_req = 0;
   sys_task::left_wing_req = 0;
-  robot.turn_pt(A(-65, Unit::DEGREES));
+  robot.turn_pt(A(-78, Unit::DEGREES));
   robot.move(-127);
   pros::delay(700);
   robot.stop_fast();
-  // robot.turn_pt(Angle(-175, Unit::DEGREES));
-  // robot.stop_fast();
-  // sys_task::right_wing_req = 1;
 
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 60);
+  // turn around, score held ball, back out
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 20);
   sys_task::right_wing_req = 0;
-  // robot.straight(-35);
-  // robot.stop_fast();
-
   sys_task::left_wing_req = 0;
-  robot.move(0);
-  // robot.turn_swing(A(180, Unit::DEGREES), 1);
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
-  // robot.straight(-15);
-  // robot.stop_fast();
-  sys_task::right_wing_req = 0;
-  robot.straight(11);
-  robot.stop_fast();
-  robot.turn_pt(A(100, Unit::DEGREES));
+  robot.straight(5);
+  robot.turn_pt(A(101, Unit::DEGREES));
   sys_task::intake_rev_req = 1;
   pros::delay(250);
-  Trajectory1D::set_constraints(70, 140, 60);
-  robot.straight(33);
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
+  robot.straight(15);
   robot.stop_fast();
-  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
+  Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 20);
   pros::delay(200);
-  robot.straight(-8.5);
-  robot.move(0);
-  robot.stop_fast();
-
+  robot.straight(-5);
   sys_task::intake_rev_req = 0;
 
-  robot.turn_pt(A(-45, Unit::DEGREES));
-  robot.stop_fast();
-  robot.straight(35);
-  robot.stop_fast();
-  robot.turn_pt(A(0, Unit::DEGREES));
-  robot.stop_fast();
-  Trajectory1D::set_constraints(40, 90, 8);
-  robot.straight(30);
+  // grab bottom mid ball
+  robot.turn_pt(A(22.3, Unit::DEGREES));
+  sys_task::intake_req = 1;
+  Trajectory1D::set_constraints(70, 140, 20);
+  robot.straight(54);
+  robot.straight(-6);
+
+  // turn and score bottom mid ball, back out
+  robot.turn_pt(A(135, Unit::DEGREES));
+  sys_task::intake_req = 0;
+  Trajectory2D::set_constraints(68, 130, 15, 11.0);
+  robot.follow_prim(
+      []() {
+        pros::delay(400);
+        sys_task::intake_rev_req = 1;
+      },
+      CubicBezier(V(25, 35), V(25, 35), 25.0), 1);
+  sys_task::intake_rev_req = 0;
+  robot.straight(-2);
+
+  //touch bar
+  robot.follow_prim(
+      []() {
+        pros::delay(400);
+        sys_task::left_wing_req = 1;
+      },
+      CubicBezier(V(-40, 32), V(-40, 32), 33.0), -1);
+  robot.move(0);
   robot.stop();
-
-  // sys_task::intake_req = 1;
-  // pros::delay(250);
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  // robot.straight(12);
-  // robot.stop();
-  // Trajectory1D::set_constraints(MAX_SPEED * 0.65, MAX_ACCEL, 5);
-  // robot.straight(-26);
-  // robot.stop();
-  // // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  // robot.turn_pt(A(-45, Unit::DEGREES));
-  // // robot.stop();
-  // sys_task::left_wing_req = 1;
-  // sys_task::right_wing_req = 1;
-  // sys_task::intake_req = 0;
-  // robot.straight(-16);
-  // sys_task::left_wing_req = 0;
-  // pros::delay(150);
-  // robot.stop();
-  // robot.turn_pt(A(-85, Unit::DEGREES));
-  // // robot.stop();
-  // // sys_task::right_wing_req = 1;
-
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 50);
-  // sys_task::right_wing_req = 0;
-  // robot.straight(-35);
-  // // robot.stop();
-  // robot.straight(11);
-  // robot.straight(-35);
-  // robot.stop();
-  // robot.straight(11);
-  // robot.turn_pt(A(101, Unit::DEGREES));
-  // sys_task::intake_rev_req = 1;
-  // pros::delay(250);
-  // robot.straight(31);
-  // robot.straight(-11);
-  // robot.straight(31);
-  // robot.straight(-13);
-  // Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 10);
-  // sys_task::intake_rev_req = 0;
-  // robot.stop();
-  // robot.turn_pt(A(-45, Unit::DEGREES));
-  // robot.stop();
-  // robot.straight(40);
-  // robot.stop();
-  // robot.turn_pt(A(0, Unit::DEGREES));
-  // robot.stop();
-  // Trajectory1D::set_constraints(MAX_SPEED * 0.55, MAX_ACCEL, 5);
-  // robot.straight(28.8);
-  // robot.stop();
 }
 
 void safe_close() {
