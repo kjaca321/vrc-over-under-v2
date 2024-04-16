@@ -19,6 +19,9 @@ void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
   auton::rush_6b_mid();
+  // robot.follow_prim(CubicBezier(Vector(15, 36), Vector(15, 36), 8.0), -1);
+
+  // robot.turn_pt(Angle(90, Unit::DEGREES));
   // Trajectory2D::set_constraints(70, 130, 15, 11.0);
   // // Trajectory2D traj(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0));
   // robot.set_brake(BrakeType::BRAKE);

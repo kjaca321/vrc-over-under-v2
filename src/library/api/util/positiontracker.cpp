@@ -14,8 +14,8 @@ namespace lib::utility {
 PositionTracker::PositionTracker(std::vector<int> left_ports,
                                  std::vector<int> right_ports, float wheel,
                                  float speed, int imu1)
-    : previous(0), prev_heading(0), prev_left(0), prev_right(0),
-      prev_left_vel(0), prev_right_vel(0),
+    : previous(0), prev_heading(0), rel_prev_heading(0), prev_left(0),
+      prev_right(0), prev_left_vel(0), prev_right_vel(0),
       relative_distance(0), control::Chassis(left_ports, right_ports),
       wheel_size(wheel), rpm(speed), odom_dt(0.01) {
   position = math::Vector(0, 0);
@@ -64,10 +64,12 @@ void PositionTracker::run_tracker() {
     prev_angular_vel = angular_vel;
 
     heading = math::Angle(heading.get() + delta.get(), math::Unit::RADIANS);
-    // heading = curr_heading;
+    relative_heading =
+        math::Angle(relative_heading.get() + delta.get(), math::Unit::RADIANS);
     prev_heading_i = math::Angle(curr_heading.get(), math::Unit::RADIANS);
 
-    float pos = (get_raw_left_pos() + get_raw_right_pos()) / 2.0, d_pos_local;
+    float pos = (get_raw_left_pos() + get_raw_right_pos()) / 2.0, d_pos_local,
+          rel_d_pos_local;
     float speed = M_PI * wheel_size * (rpm / 600.0) * (pos - previous) / 360.0;
 
     float left_pos = get_raw_left_pos();
@@ -96,23 +98,34 @@ void PositionTracker::run_tracker() {
     float avg = ang + partial;
     prev_heading = ang;
 
+    float rel_ang = relative_heading.get();
+    float rel_d_heading = rel_ang - rel_prev_heading;
+    float rel_partial = d_heading / 2;
+    float rel_avg = rel_ang + rel_partial;
+    rel_prev_heading = rel_ang;
+
     if (d_heading == 0)
       d_pos_local = speed;
     else
       d_pos_local = 2 * sin(d_heading / 2) * (speed / d_heading);
 
+    if (rel_d_heading == 0)
+      rel_d_pos_local = speed;
+    else
+      rel_d_pos_local = 2 * sin(rel_d_heading / 2) * (speed / rel_d_heading);
+
     position.x += d_pos_local * sin(avg);
     position.y += d_pos_local * cos(avg);
 
-    relative_position.x += d_pos_local * sin(avg);
-    relative_position.y += d_pos_local * cos(avg);
+    relative_position.x += rel_d_pos_local * sin(rel_avg);
+    relative_position.y += rel_d_pos_local * cos(rel_avg);
 
     // relative_position.y += speed * cos(heading.get());
     // relative_position.x += speed * sin(heading.get());
 
     relative_distance += speed;
 
-    // pros::lcd::print(0, "%s", relative_position.to_string());
+    pros::lcd::print(0, "%s", relative_position.to_string());
     pros::lcd::print(1, "currheading: %f", curr_heading.degrees().get());
 
     pros::Task::delay_until(&nw, odom_dt * 1000);

@@ -135,6 +135,7 @@ private:
 
   float previous;
   float prev_heading;
+  float rel_prev_heading;
   float prev_left;
   float prev_right;
   float prev_left_vel;
@@ -143,6 +144,7 @@ private:
   math::Angle heading;
   math::Angle relative_heading;
   math::Angle prev_heading_i;
+  math::Angle prev_relative_heading_i;
   math::Vector position;
   math::Vector relative_position;
   pros::Imu *imu;
