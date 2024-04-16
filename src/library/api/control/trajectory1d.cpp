@@ -42,20 +42,31 @@ Trajectory1D::Trajectory1D(float desired_dist) {
 std::vector<math::Pose1D> Trajectory1D::get() { return trajectory; }
 
 math::Pose1D Trajectory1D::get_kinematics(float distance_travelled) {
+  /* kinematic equations for timestamps of acceleration change derived from the
+   * constant-acceleration formulas */
   float t1 = (vel - vel0) / acc;
   float t2 = dist / vel - vel0 / acc + (vel0 * vel0) / (acc * vel);
   float tf =
       dist / vel + vel / acc - 2 * vel0 / acc + (vel0 * vel0) / (acc * vel);
+
+  /* discrete integrals of velocity at timestamps t1 and t2 (accumulated
+   * distance/arc length) */
   float d1 = acc / 2 * t1 * t1 + vel0 * t1;
   float d2 = d1 + vel * t2 - vel * t1;
-  if (distance_travelled < d1)
+
+  /* based on current distance travelled, return desired linear acceleration and
+   * velocity derived from the kinematic timestamp equations */
+  
+  if (distance_travelled < d1) // first segment (positive acceleration)
     return math::Pose1D(
         distance_travelled,
         (vel0 + std::sqrt(vel0 * vel0 + 8 * distance_travelled * acc)) / 2,
         acc);
-  if (distance_travelled < d2)
+  
+  if (distance_travelled < d2) // second segment (constant velocity)
     return math::Pose1D(distance_travelled, vel, 0);
-  else
+  
+  else // third segment (negative acceleration)
     return math::Pose1D(
         distance_travelled,
         (vel + acc * t2 - acc * tf +
