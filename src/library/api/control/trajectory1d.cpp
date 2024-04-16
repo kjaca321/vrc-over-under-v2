@@ -18,9 +18,12 @@ void Trajectory1D::set_constraints(float in_vel, float in_accel,
 }
 
 Trajectory1D::Trajectory1D(float desired_dist) {
+  // initialize profile constants and arguments
   total_distance = desired_dist;
   acc = global_max_acceleration, vel0 = global_min_velocity,
   vels = global_max_velocity, dist = total_distance;
+
+  // conditional ladder to limit the velocity based on total target distance
   float initial_factor = (dist * acc + vel0 * vel0) / (2 * vels) + vels / 2;
   float factor =
       (dist > 25) ? (initial_factor - 5)
@@ -28,12 +31,20 @@ Trajectory1D::Trajectory1D(float desired_dist) {
   internal_max_vel = std::min(vels, factor);
   vel = internal_max_vel;
 
+  //reset iterators and resulting storage
   float dist_trav = 0;
   float time = 0;
   trajectory = {};
+  
+  //iterate through each distance step in the target distance
   while (dist_trav <= total_distance) {
+    //retrieve desired velocity and acceleration from motion profile with current distance traveled
     math::Pose1D kinematics = get_kinematics(dist_trav);
+
+    //update result storage
     trajectory.push_back(kinematics);
+
+    //distance parameterized (integrates distance from desired velocity)
     dist_trav += kinematics.vel * dt;
     time += dt;
   }
