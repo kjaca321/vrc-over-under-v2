@@ -12,8 +12,8 @@ namespace auton {
 void rush_6b_mid(void);
 void rush_6b_far(void);
 void safe_6b(void);
-void safe_4b(void);
-void safe_3b_touch(void);
+void safe_6b_touch(void);
+void safe_4b_touch(void);
 void safe_close(void);
 void rush_close(void);
 void rush_close_push(void);
