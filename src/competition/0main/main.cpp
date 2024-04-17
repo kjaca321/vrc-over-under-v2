@@ -23,9 +23,15 @@ void autonomous() {
 
   // robot.turn_pt(Angle(90, Unit::DEGREES));
   // Trajectory2D::set_constraints(70, 130, 15, 11.0);
-  // // Trajectory2D traj(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0));
-  // robot.set_brake(BrakeType::BRAKE);
-  // robot.follow_prim(CubicBezier(Vector(30, 30), Vector(30, 30), 15.0), 1);
+  // Trajectory1D::set_constraints(45, 130, 15);
+  // // // Trajectory2D traj(CubicBezier(Vector(0, 18), Vector(-14, 30), 6.0));
+  // // robot.set_brake(BrakeType::BRAKE);
+  // robot.follow_prim(CubicBezier(Vector(-33, 7), Vector(-33, 7), 17.0), -1);
+  // robot.turn_pt(Angle(-90, Unit::DEGREES));
+  // robot.straight(-22);
+  // robot.stop();
+  // sys_task::left_wing_req = 1;
+  // robot.stop();
   // robot.brake();
   // pros::delay(100000);
   // CubicBezier raw_path(Vector(20, 20), Vector(20, 20), 6.0);

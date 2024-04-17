@@ -69,10 +69,10 @@ void run_auton() {
     auton::safe_6b();
     break;
   case 2:
-    auton::safe_4b();
+    auton::safe_6b_touch();
     break;
   case 3:
-    auton::safe_3b_touch();
+    auton::safe_4b_touch();
     break;
   case 4:
     auton::rush_6b_mid();
