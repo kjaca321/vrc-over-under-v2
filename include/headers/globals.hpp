@@ -15,6 +15,7 @@ void safe_6b(void);
 void safe_6b_touch(void);
 void safe_4b_touch(void);
 void safe_close(void);
+void safe_close_alt(void);
 void rush_close(void);
 void rush_close_push(void);
 void rush_close_wp(void);

@@ -5,7 +5,7 @@ void initialize() {
   pros::lcd::initialize();
   // run_auton_sequence();
   // auton::run_selection();
-  robot.setup();
+  // robot.setup();
   master.rumble("-");
   pros::lcd::print(2, "READY");
   // kill_auton_sequence();
@@ -18,7 +18,7 @@ void competition_initialize() {}
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  auton::rush_6b_mid();
+  auton::rush_6b_far();
   // robot.follow_prim(CubicBezier(Vector(15, 36), Vector(15, 36), 8.0), -1);
 
   // robot.turn_pt(Angle(90, Unit::DEGREES));
