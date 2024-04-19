@@ -507,9 +507,23 @@ void Driver::control() {
       rvel /= ratio;
     }
 
+    float v_ = input::Analog::get_left_y();
+    float w_ = input::Analog::get_right_x();
+    float k = 1.05;
+
+    float v_map = map(v_), w_map = map(w_);
+    float left = v_map + k*w_map;
+    float right = v_map - k*w_map;
+
+    float ratio2 = std::max(std::abs(left), std::abs(right)) / 127;
+    if (ratio2 > 1) {
+      left /= ratio2;
+      right /= ratio2;
+    }
+
     // send outputs
-    move_left(lvel);
-    move_right(rvel);
+    move_left(left);
+    move_right(right);
 
     pros::Task::delay_until(&nw, 1000 * dt);
   }
