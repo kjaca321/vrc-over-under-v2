@@ -18,14 +18,14 @@ void competition_initialize() {}
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  // auton::safe_close();
-  sys_task::intake_req = 1;
-  pros::delay(300);
-  Trajectory2D::set_constraints(60, 110, 5, 11.0);
-  Trajectory1D::set_constraints(70, 140, 15);
+  auton::skills();
+  // sys_task::intake_req = 1;
+  // pros::delay(300);
+  // Trajectory2D::set_constraints(60, 110, 5, 11.0);
+  // Trajectory1D::set_constraints(70, 140, 15);
+  // // robot.move(0);
+  // robot.turn_pt(Angle(60, Unit::DEGREES));
   // robot.move(0);
-  robot.turn_pt(Angle(60, Unit::DEGREES));
-  robot.move(0);
   // robot.follow_prim(CubicBezier(Vector(15, 36), Vector(15, 36), 8.0), -1);
 
   // robot.turn_pt(Angle(90, Unit::DEGREES));

@@ -563,7 +563,6 @@ void safe_close() {
   robot.move(0);
   robot.turn_pt(A(60, Unit::DEGREES));
   robot.move(0);
-  pros::delay(100000);
   sys_task::right_wing_req = 1;
   robot.turn_pt(A(-30, Unit::DEGREES));
   pros::delay(100);
@@ -739,26 +738,12 @@ void skills_start() {
   robot.follow_prim(CubicBezier(V(-23, 20), V(-23, 20), 17.0), -1);
 
   //setup and start loading
-  robot.follow_prim(CubicBezier(V(7, 14), V(7, 14), 13.0), 1);
-  robot.turn_pt(A(23, Unit::DEGREES));
-  pros::delay(20);
-  Angle curr = robot.get_heading();
-  pros::delay(20);
+  sys_task::intake_rev_req  = 1;
+  robot.follow_prim(CubicBezier(V(10, 18), V(10, 18), 13.0), 1);
+  robot.turn_pt(A(-23, Unit::DEGREES));
   sys_task::left_wing_req = 1;
-  sys_task::cata_req = 1;
-  robot.set_brake(BrakeType::HOLD);
-  robot.stop_fast();
-  robot.brake();
-  pros::delay(19000 * 1);
-  sys_task::cata_req = 0;
-  robot.set_brake(BrakeType::COAST);
-  robot.stop_fast();
-
-  //reset heading (prevents drift) and get ready for movement
+  pros::delay(4000);
   sys_task::left_wing_req = 0;
-  pros::delay(100);
-  robot.set_heading(curr);
-  pros::delay(2);
 }
 
 void skills() {
@@ -766,7 +751,9 @@ void skills() {
   skills_start();
   Trajectory2D::set_constraints(67, 130, 5, 11.0);
   Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 15);
-  
+  sys_task::front_wings_req = 1;
+  robot.follow_prim(CubicBezier(V(-20,95), V(30, 100), 25), 1);
+
   //clear unscored balls (spline in)
   robot.straight(5);
   sys_task::front_wings_req = 1;
