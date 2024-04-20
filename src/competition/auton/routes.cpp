@@ -560,7 +560,10 @@ void safe_close() {
   pros::delay(300);
   Trajectory2D::set_constraints(60, 110, 5, 11.0);
   Trajectory1D::set_constraints(70, 140, 15);
-  robot.turn_pt(A(57, Unit::DEGREES));
+  robot.move(0);
+  robot.turn_pt(A(60, Unit::DEGREES));
+  robot.move(0);
+  pros::delay(100000);
   sys_task::right_wing_req = 1;
   robot.turn_pt(A(-30, Unit::DEGREES));
   pros::delay(100);

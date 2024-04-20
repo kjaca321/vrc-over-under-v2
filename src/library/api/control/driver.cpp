@@ -219,7 +219,7 @@ void Driver::turn_pt(math::Angle desired_heading) {
 
   // optimize controller efficiency by pre-checking error tolerance
   bool skip = 0;
-  if (fabs(err) < tol) {
+  if (x==0) {
     x = 0.00001;
     skip = 1;
   }
