@@ -20,9 +20,10 @@ PID::PID(float p, float i, float d, float b)
     : kP(p), kI(i), kD(d), bias(b), integral(0) {}
 
 float PID::get_output(float error, float pre_error, uint32_t dt) {
-  integral += error * dt;
+  if (error < bias) integral += error * dt;
+  else integral = 0;
   float derivative = (error - pre_error) / (float)dt;
-  return kP * error + kI * integral + kD * derivative + bias;
+  return kP * error + kI * integral + kD * derivative;
 }
 
 void PID::set_gains(float p, float i, float d) {

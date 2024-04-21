@@ -5,7 +5,7 @@ void initialize() {
   pros::lcd::initialize();
   // run_auton_sequence();
   // auton::run_selection();
-  robot.setup();
+  // robot.setup();
   master.rumble("-");
   pros::lcd::print(2, "READY");
   // kill_auton_sequence();
@@ -18,14 +18,15 @@ void competition_initialize() {}
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  auton::skills();
+  auton::rush_6b_mid();
   // sys_task::intake_req = 1;
   // pros::delay(300);
   // Trajectory2D::set_constraints(60, 110, 5, 11.0);
   // Trajectory1D::set_constraints(70, 140, 15);
   // // robot.move(0);
-  // robot.turn_pt(Angle(60, Unit::DEGREES));
+  // robot.turn_pt(Angle(90, Unit::DEGREES));
   // robot.move(0);
+  // robot.move(50);
   // robot.follow_prim(CubicBezier(Vector(15, 36), Vector(15, 36), 8.0), -1);
 
   // robot.turn_pt(Angle(90, Unit::DEGREES));

@@ -45,7 +45,7 @@ public:
   void follow_feed(Trajectory2D trajectory, int direction);
   void straight(float distance);
   void straight(void (*sub)(void), float distance);
-  void turn_pt(math::Angle desired_heading);
+  void turn_pt(math::Angle desired_heading, int rough = 0);
   void turn_swing(math::Angle desired_heading, int direction);
   void mtp(math::Vector target, int direction);
 
@@ -122,8 +122,9 @@ private:
   static inline float args[] = {3.96476,       6.8259,         -0.945961,
                                 0.076107,      -0.00311266,    0.0000674742,
                                 -0.0000007372, 0.0000000031934};
-  static inline float prop_filter[] = {232.389, -0.166599, 3463.24, -757.926,
-                                       -0.438566};
+  static inline float prop_filter[] = {236.131, -0.511007, 2146.77, 
+                                      16346000000000.0, -24.3811, 
+                                      -91.6301, 0.987608};
   static inline float derivative_filter[] = {987.966, 1.35596, -0.00542918,
                                              0.00000594226, 0.000000037485};
 };

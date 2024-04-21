@@ -200,7 +200,7 @@ void Driver::follow_prim(void (*sub)(void), Trajectory2D trajectory,
     inside.remove();
 }
 
-void Driver::turn_pt(math::Angle desired_heading) {
+void Driver::turn_pt(math::Angle desired_heading, int rough) {
   // evalute angle to turn (initial error)
   float targ = desired_heading.radians().get();
   float curr = get_heading().get();
@@ -209,13 +209,15 @@ void Driver::turn_pt(math::Angle desired_heading) {
 
   // setup loop exit conditions and derivative conditions
   float prev = 0, tol = 0.008, tol2 = .007, timeout = 0, timeout2 = 0,
-        maxtime = 2;
+        maxtime = 2, deadband = 0.1;
   float ang, prev_ang = 0;
+  if (rough == 2) tol = 0.11;
+  else if (rough == 1) tol = 0.04;
 
   // setup usable error cases
   float err = raw_ang_dist.get();
   float err_deg = raw_ang_dist.degrees().get();
-  float min = 140, x = fabs(err_deg);
+  float min = 150, max = 900, x = fabs(err_deg);
 
   // optimize controller efficiency by pre-checking error tolerance
   bool skip = 0;
@@ -224,14 +226,11 @@ void Driver::turn_pt(math::Angle desired_heading) {
     skip = 1;
   }
 
-  // initialize PID controller with autotuned gains
-  utility::PID controller(
-      fmax(min, prop_filter[0] + prop_filter[1] * x + prop_filter[2] * 1 / x +
-                    prop_filter[3] * pow(x, prop_filter[4])),
-      0,
-      derivative_filter[0] + derivative_filter[1] * x +
-          derivative_filter[2] * x * x + derivative_filter[3] * x * x * x +
-          derivative_filter[4] * x * x * x * x);
+  //initialize PID controller with autotuned gains
+  utility::PID controller(fmin(max, fmax(min, prop_filter[0] + prop_filter[1]*x 
+                          + prop_filter[2]*1/x + prop_filter[3]*pow(x, prop_filter[4]) 
+                          + prop_filter[5]*pow(prop_filter[6], x)))
+  ,0,1400,deadband);
 
   while (!skip) { // if initial error is greater than tolerance
     // reevaluate angle to turn (error)
@@ -267,9 +266,14 @@ void Driver::turn_pt(math::Angle desired_heading) {
       timeout2 = 0;
 
     // check for settle conditions and exit if met
-    if (timeout >= maxtime || timeout2 >= maxtime + 8)
-      break;
-
+    if (rough < 2) {
+      if (timeout >= maxtime || timeout2 >= maxtime + 15)
+        break;
+    }
+    else {
+      if (timeout >= maxtime)
+        break;
+    }
     pros::delay(10);
   }
 }
