@@ -46,6 +46,7 @@ public:
   void straight(float distance);
   void straight(void (*sub)(void), float distance);
   void turn_pt(math::Angle desired_heading, int rough = 0);
+  void turn_rel(math::Angle desired_heading, int rough = 0);
   void turn_swing(math::Angle desired_heading, int direction);
   void mtp(math::Vector target, int direction);
 

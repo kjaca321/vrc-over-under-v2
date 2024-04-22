@@ -11,6 +11,7 @@ namespace auton {
 
 void rush_6b_mid(void);
 void rush_6b_far(void);
+void rush_6b_flick(void);
 void safe_6b(void);
 void safe_6b_touch(void);
 void safe_4b_touch(void);
