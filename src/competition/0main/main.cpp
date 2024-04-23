@@ -11,14 +11,17 @@ void initialize() {
   // kill_auton_sequence();
 }
 
-void disabled() {}
+void disabled() {
+  hang1.set(0);
+  hang2.set(0);
+}
 
 void competition_initialize() {}
 
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  auton::rush_6b_far();
+  auton::safe_6b_touch();
   // sys_task::intake_req = 1;
   // pros::delay(300);
   // Trajectory2D::set_constraints(60, 110, 5, 11.0);
