@@ -21,7 +21,7 @@ void competition_initialize() {}
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  auton::skills();
+  auton::rush_close_far();
   // Trajectory1D::set_constraints(67, 130, 15);
   // robot.straight(-4);
   // robot.turn_swing(Angle(-45, Unit::DEGREES), 1);
