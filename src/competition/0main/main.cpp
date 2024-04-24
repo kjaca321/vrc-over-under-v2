@@ -4,7 +4,7 @@ void initialize() {
   robot.set_controller_tuning("arcade", 2.04, "exponential", 0.02, 10, 0.95);
   pros::lcd::initialize();
   // run_auton_sequence();
-  // auton::run_selection();
+  auton::run_selection();
   // robot.setup();
   master.rumble("-");
   pros::lcd::print(2, "READY");
@@ -12,8 +12,7 @@ void initialize() {
 }
 
 void disabled() {
-  hang1.set(0);
-  hang2.set(0);
+
 }
 
 void competition_initialize() {}
@@ -21,7 +20,7 @@ void competition_initialize() {}
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  auton::rush_close_far();
+  auton::run_auton();
   // Trajectory1D::set_constraints(67, 130, 15);
   // robot.straight(-4);
   // robot.turn_swing(Angle(-45, Unit::DEGREES), 1);

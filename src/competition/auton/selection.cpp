@@ -27,27 +27,39 @@ void run_selection() {
       auton_str = "safe 6b         ";
       break;
     case 2:
-      auton_str = "safe 4b touch   ";
+      auton_str = "safe 6b touch   ";
       break;
     case 3:
-      auton_str = "safe 3b touch   ";
+      auton_str = "safe 4b touch   ";
       break;
     case 4:
-      auton_str = "rush 6b         ";
+      auton_str = "rush 6b mid     ";
       break;
     case 5:
-      auton_str = "safe close      ";
+      auton_str = "rush 6b far     ";
       break;
     case 6:
-      auton_str = "rush close wp   ";
+      auton_str = "rush 6b flick   ";
       break;
     case 7:
-      auton_str = "rush close      ";
+      auton_str = "safe close      ";
       break;
     case 8:
-      auton_str = "rush close push ";
+      auton_str = "safe close alt  ";
       break;
     case 9:
+      auton_str = "rush close wp   ";
+      break;
+    case 10:
+      auton_str = "rush close      ";
+      break;
+    case 11:
+      auton_str = "rush close far  ";
+      break;
+    case 12:
+      auton_str = "rush close push ";
+      break;
+    case 13:
       auton_str = "skills          ";
       break;
     }
@@ -78,24 +90,36 @@ void run_auton() {
     auton::rush_6b_mid();
     break;
   case 5:
-    auton::safe_close();
+    auton::rush_6b_far();
     break;
   case 6:
-    auton::rush_close_wp();
+    auton::rush_6b_flick();
     break;
   case 7:
-    auton::rush_close();
+    auton::safe_close();
     break;
   case 8:
-    auton::rush_close_push();
+    auton::safe_close_alt();
     break;
   case 9:
+    auton::rush_close_wp();
+    break;
+  case 10:
+    auton::rush_close();
+    break;
+  case 11:
+    auton::rush_close_far();
+    break;
+  case 12:
+    auton::rush_close_push();
+    break;
+  case 13:
     auton::skills();
     break;
   }
 }
 
 uint32_t max_time = 14998;
-unsigned int selected_auton = 0, num_autons = 9;
+unsigned int selected_auton = 0, num_autons = 13;
 
 }; // namespace auton
