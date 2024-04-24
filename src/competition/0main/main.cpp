@@ -21,12 +21,22 @@ void competition_initialize() {}
 void autonomous() {
   run_auton_sequence();
   pros::lcd::print(3, "running");
-  auton::safe_6b_touch();
+  auton::skills();
+  // Trajectory1D::set_constraints(67, 130, 15);
+  // robot.straight(-4);
+  // robot.turn_swing(Angle(-45, Unit::DEGREES), 1);
+  // // robot.move(-127);
+
+  // // Trajectory2D::set_constraints(MAX_SPEED, MAX_ACCEL, 5, 11.0);
+  // robot.move(-127);
+  // pros::delay(600);
+  // robot.move(0);
+  // // robot.turn_swing(Angle(-45, Unit::DEGREES), 1);
   // sys_task::intake_req = 1;
   // pros::delay(300);
   // Trajectory2D::set_constraints(60, 110, 5, 11.0);
   // Trajectory1D::set_constraints(70, 140, 15);
-  // // robot.move(0);
+  // robot.move(0);
   // robot.turn_rel(Angle(225, Unit::DEGREES), 1); robot.move(0);
   // robot.move(50);
   // robot.follow_prim(CubicBezier(Vector(15, 36), Vector(15, 36), 8.0), -1);
@@ -67,7 +77,7 @@ void opcontrol() {
   if (auton::selected_auton == auton::num_autons) {
     run_auton_sequence();
     pros::lcd::print(3, "running");
-    auton::skills_start();
+    auton::driver_skills();
     kill_auton_sequence();
   }
   run_driver_sequence();

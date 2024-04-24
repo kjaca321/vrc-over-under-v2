@@ -477,12 +477,10 @@ void Driver::turn_swing(math::Angle desired_heading, int direction) {
       fmax(min, prop_filter[0] + prop_filter[1] * x + prop_filter[2] * 1 / x +
                     prop_filter[3] * pow(x, prop_filter[4])),
       0,
-      derivative_filter[0] + derivative_filter[1] * x +
-          derivative_filter[2] * x * x + derivative_filter[3] * x * x * x +
-          derivative_filter[4] * x * x * x * x);
+      1400);
 
   // setup loop exit conditions and derivative conditions
-  float prev = 0, tol = 0.008, tol2 = .007, timeout = 0, timeout2 = 0,
+  float prev = 0, tol = 0.06, tol2 = .007, timeout = 0, timeout2 = 0,
         maxtime = 2;
   float ang, prev_ang = 0;
 
@@ -531,7 +529,7 @@ void Driver::turn_swing(math::Angle desired_heading, int direction) {
       timeout2 = 0;
 
     // check for settle conditions and exit if met
-    if (timeout >= maxtime || timeout2 >= maxtime + 16)
+    if (timeout >= maxtime || timeout2 >= maxtime + 200)
       break;
 
     pros::delay(10);

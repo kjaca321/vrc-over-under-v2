@@ -18,10 +18,12 @@ void safe_4b_touch(void);
 void safe_close(void);
 void safe_close_alt(void);
 void rush_close(void);
+void rush_close_far(void);
 void rush_close_push(void);
 void rush_close_wp(void);
 void skills(void);
 void skills_start(void);
+void driver_skills(void);
 void run_selection(void);
 void run_auton(void);
 
