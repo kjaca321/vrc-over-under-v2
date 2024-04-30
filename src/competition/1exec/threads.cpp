@@ -57,7 +57,7 @@ void run_input() {
     wings_req = Digital::pressing(Button::L2);
     left_wing_req = 0;
     right_wing_req = 0;
-    hang_req = Button::b_pressed;
+    hang_req = Button::y_pressed;
     if (Digital::pressing(Button::UP)) {
       master_cata_req = 0;
       master_left_wing_req = 0;

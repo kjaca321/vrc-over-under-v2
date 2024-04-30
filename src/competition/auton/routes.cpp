@@ -39,7 +39,9 @@ void rush_6b_mid() {
   sys_task::intake_rev_req = 0;
   sys_task::intake_req = 1;
   robot.turn_pt(A(-1, Unit::DEGREES));
-  robot.straight(34.5);
+  robot.straight(33);
+  robot.straight(-.1);
+  pros::delay(150);
 
   // // score balls into side of goal
   Trajectory2D::set_constraints(42, 130, 5, 11.0);
@@ -52,14 +54,14 @@ void rush_6b_mid() {
         sys_task::right_wing_req = 1;
         pros::delay(200);
         // sys_task::right_wing_req = 0;
-        pros::delay(150);
+        pros::delay(250);
         sys_task::left_wing_req = 0;
         
       },
       CubicBezier(V(3, 25), V(-8, 36), 27.0), -1);
   // sys_task::right_wing_req = 0;
-  sys_task::left_wing_req = 0;
   robot.turn_pt(A(-45, Unit::DEGREES), 1);
+  sys_task::left_wing_req = 0;
   robot.straight(.1);
   // robot.move(0);
   // pros::delay(200);
@@ -214,7 +216,9 @@ void rush_6b_far() {
   robot.turn_pt(A(-40, Unit::DEGREES));
   robot.straight(7);
   robot.turn_pt(A(-1, Unit::DEGREES));
-  robot.straight(31);
+  robot.straight(29.5);
+  robot.straight(-.1);
+  pros::delay(150);
 
   // // score balls into side of goal
   Trajectory2D::set_constraints(42, 130, 5, 11.0);
@@ -227,15 +231,15 @@ void rush_6b_far() {
         sys_task::right_wing_req = 1;
         pros::delay(200);
         // sys_task::right_wing_req = 0;
-        pros::delay(150);
+        pros::delay(250);
         sys_task::left_wing_req = 0;
         
       },
-      CubicBezier(V(3, 25), V(-8, 36), 27.0), -1);
+      CubicBezier(V(3, 21), V(-8, 32), 23.0), -1);
 
   // sys_task::right_wing_req = 0;
-  sys_task::left_wing_req = 0;
   robot.turn_pt(A(-45, Unit::DEGREES), 1);
+  sys_task::left_wing_req = 0;
   robot.straight(.1);
   // robot.move(0);
   // pros::delay(200);
@@ -367,13 +371,13 @@ void rush_6b_flick() {
   sys_task::left_wing_req = 0;
   pros::delay(150);
 
-  robot.straight(-30);
+  robot.straight(-37);
   robot.turn_pt([](){
     pros::delay(300);
     sys_task::right_wing_req = 1;
   }, A(53, Unit::DEGREES), 1);
   sys_task::right_wing_req = 0;
-  robot.straight(5);
+  robot.straight(3);
   // robot.turn_pt(A(50, Unit::DEGREES), 1);
 
   
@@ -402,7 +406,9 @@ void rush_6b_flick() {
   robot.turn_pt(A(-40, Unit::DEGREES));
   robot.straight(7);
   robot.turn_pt(A(-.5, Unit::DEGREES));
-  robot.straight(31);
+    robot.straight(29.5);
+  robot.straight(-.1);
+  pros::delay(150);
 
   // // score balls into side of goal
   Trajectory2D::set_constraints(42, 130, 5, 11.0);
@@ -415,14 +421,14 @@ void rush_6b_flick() {
         sys_task::right_wing_req = 1;
         pros::delay(200);
         // sys_task::right_wing_req = 0;
-        pros::delay(150);
+        pros::delay(250);
         sys_task::left_wing_req = 0;
         
       },
-      CubicBezier(V(3, 25), V(-8, 36), 27.0), -1);
+      CubicBezier(V(3, 21), V(-8, 32), 23.0), -1);
   // sys_task::right_wing_req = 0;
-  sys_task::left_wing_req = 0;
   robot.turn_pt(A(-45, Unit::DEGREES), 1);
+  sys_task::left_wing_req = 0;
   robot.straight(.1);
   // robot.move(0);
   // pros::delay(200);
@@ -641,31 +647,31 @@ void safe_6b() {
   robot.straight(-5);
 
   // turn and score bottom mid ball, back out
-  robot.turn_pt(A(135, Unit::DEGREES), 1);
+  robot.turn_pt(A(140, Unit::DEGREES), 1);
   sys_task::intake_req = 0;
   Trajectory2D::set_constraints(68, 130, 15, 11.0);
   robot.follow_prim(
       []() {
-        pros::delay(400);
+        pros::delay(350);
         sys_task::intake_rev_req = 1;
       },
       CubicBezier(V(25, 35), V(25, 35), 25.0), 1);
   sys_task::intake_rev_req = 0;
-  robot.straight(-3);
+  robot.straight(-4.5);
 
   // turn and grab far mid ball
-  robot.turn_pt(A(120, Unit::DEGREES), 1);
+  robot.turn_pt(A(110, Unit::DEGREES), 1);
   Trajectory1D::set_constraints(70, 140, 15);
   robot.straight(-12);
   sys_task::intake_rev_req = 0;
   sys_task::intake_req = 1;
-  robot.turn_pt(A(50, Unit::DEGREES));
-  robot.straight(24.5);
+  robot.turn_pt(A(40, Unit::DEGREES));
+  robot.straight(24);
   robot.straight(-5);
 
   // score/push far mid and mid ball together
   sys_task::intake_req = 0;
-  robot.turn_pt(A(180, Unit::DEGREES), 4);
+  robot.turn_pt(A(-179, Unit::DEGREES), 4);
   Trajectory1D::set_constraints(MAX_SPEED, MAX_ACCEL, 70);
   sys_task::front_wings_req = 1;
   sys_task::intake_rev_req = 1;
@@ -1263,9 +1269,9 @@ void skills() {
     // pros::delay(400);
     // robot.turn_pt(A(90, Unit::DEGREES), 1);
     Trajectory2D::set_constraints(67, 130, 5, 11.0);
-    robot.straight(-36);
-    robot.turn_pt(A(1.5, Unit::DEGREES), 0);
-    robot.straight(-50);
+    robot.straight(-33);
+    robot.turn_pt(A(10, Unit::DEGREES), 0);
+    robot.straight(-58);
     // robot.follow_prim(CubicBezier(V(4, 28), V(-60, 38), 25), -1);
     // robot.straight(-5);
     if (i==2) {
